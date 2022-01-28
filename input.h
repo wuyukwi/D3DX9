@@ -1,6 +1,6 @@
 /********************************************************************************* 
 
-  *FileName: input.cpp  
+  *FileName: input.h  
             コウ  キガク
   *Author:  Huang QiYue
   *Version:  1.0

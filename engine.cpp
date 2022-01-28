@@ -191,6 +191,10 @@ Engine::Engine(EngineSetup *setup)
 	// Create the input object.
 	m_input = new Input(m_window);
 
+	// Create the animation object
+	m_animation = new CD3DXAnimation(m_device);
+	m_animation->Init(L"data/tiny.x");
+
 	// Seed the random number generator with the current time.
 	srand(timeGetTime());
 
@@ -412,4 +416,12 @@ D3DDISPLAYMODE *Engine::GetDisplayMode()
 Input *Engine::GetInput()
 {
 	return m_input;
+}
+
+//-----------------------------------------------------------------------------
+// Returns a pointer to the scene manager.
+//-----------------------------------------------------------------------------
+SceneManager* Engine::GetSceneManager()
+{
+	return m_sceneManager;
 }

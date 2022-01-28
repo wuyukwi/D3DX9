@@ -1,6 +1,6 @@
 /********************************************************************************* 
 
-  *FileName: engine.cpp  
+  *FileName: engine.h  
             コウ  キガク
   *Author:  Huang QiYue
   *Version:  1.0
@@ -13,6 +13,9 @@
 #define ENGINE_H_
 
 #define DIRECTINPUT_VERSION 0x0800
+#define SAFE_DELETE( p )       { if( p ) { delete ( p );     ( p ) = NULL; } }
+#define SAFE_DELETE_ARRAY( p ) { if( p ) { delete[] ( p );   ( p ) = NULL; } }
+#define SAFE_RELEASE( p )      { if( p ) { ( p )->Release(); ( p ) = NULL; } }
 
 #include <stdio.h>
 #include <tchar.h>
@@ -21,16 +24,42 @@
 
 #include <d3dx9.h>
 #include <dinput.h>
-#define SAFE_DELETE( p )       { if( p ) { delete ( p );     ( p ) = NULL; } }
-#define SAFE_DELETE_ARRAY( p ) { if( p ) { delete[] ( p );   ( p ) = NULL; } }
-#define SAFE_RELEASE( p )      { if( p ) { ( p )->Release(); ( p ) = NULL; } }
 
 #include "imgui.h"
 #include "backends\imgui_impl_dx9.h"
 #include "backends\imgui_impl_win32.h"
 
-#include "input.h"
+//#include "input.h"
+//#include "linkedlist.h"
+//#include "geometry.h"
+//#include "scripting.h"
+//#include "scene_object.h"
+//#include "spawner_object.h"
+//#include "bounding_volume.h"
+//#include "scene_manager.h"
+//#include "mesh.h"
+//#include "resource_management.h"
+//#include "material.h"
+//#include "view_frustum.h"
+//#include "render_cache.h"
+#include "allocatehierarchy.h"
+#include "animation.h"
+#include "animinstance.h"
 
+
+#include "LinkedList.h"
+#include "resource_management.h"
+#include "Geometry.h"
+#include "Scripting.h"
+#include "Input.h"
+#include "Bounding_Volume.h"
+#include "Material.h"
+#include "Mesh.h"
+#include "Scene_Object.h"
+#include "Spawner_Object.h"
+#include "View_Frustum.h"
+#include "Render_Cache.h"
+#include "Scene_Manager.h"
 // --------------------------------------------------
 // ライブラリのリンク
 // --------------------------------------------------
@@ -95,6 +124,8 @@ private:
 	bool		   m_stateChanged; 	 // Indicates if the state changed in the current frame.
 
 	Input* m_input;	      // Input object.
+	CD3DXAnimation* m_animation;
+	SceneManager* m_sceneManager; // Scene manager.
 
 public:
 	Engine(EngineSetup *setup = NULL);
@@ -111,6 +142,7 @@ public:
 	D3DDISPLAYMODE*   GetDisplayMode();
 
 	Input* GetInput();
+	SceneManager* GetSceneManager();
 };
 
 
