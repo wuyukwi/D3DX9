@@ -30,6 +30,10 @@
 #include "backends\imgui_impl_win32.h"
 
 #include "input.h"
+#include "allocatehierarchy.h"
+#include "animation.h"
+#include "animinstance.h"
+
 
 // --------------------------------------------------
 // ライブラリのリンク
@@ -95,6 +99,8 @@ private:
 	bool		   m_stateChanged; 	 // Indicates if the state changed in the current frame.
 
 	Input* m_input;	      // Input object.
+
+	CD3DXAnimation* m_animation;
 
 public:
 	Engine(EngineSetup *setup = NULL);

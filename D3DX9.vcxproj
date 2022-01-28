@@ -145,6 +145,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="allocatehierarchy.cpp" />
+    <ClCompile Include="animation.cpp" />
+    <ClCompile Include="animinstance.cpp" />
     <ClCompile Include="backends\imgui_impl_dx9.cpp" />
     <ClCompile Include="backends\imgui_impl_win32.cpp" />
     <ClCompile Include="engine.cpp" />
@@ -157,6 +160,9 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="allocatehierarchy.h" />
+    <ClInclude Include="animation.h" />
+    <ClInclude Include="animinstance.h" />
     <ClInclude Include="backends\imgui_impl_dx9.h" />
     <ClInclude Include="backends\imgui_impl_win32.h" />
     <ClInclude Include="engine.h" />
