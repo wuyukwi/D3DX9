@@ -52,6 +52,11 @@ void CAnimInstance::SetMatrix(const LPD3DXMATRIX matrix)
 	m_Matrix = *matrix;
 }
 
+void CAnimInstance::UpdataMatrix(const LPD3DXMATRIX matrix)
+{
+	m_Matrix *= *matrix;
+}
+
 int CAnimInstance::GetAnimationNum() const
 {
 	return m_pAnimController->GetMaxNumAnimationSets();

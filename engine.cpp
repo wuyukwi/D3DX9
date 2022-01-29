@@ -176,7 +176,7 @@ Engine::Engine(EngineSetup *setup)
 
 	// Set the projection matrix.
 	D3DXMATRIX projMatrix;
-	D3DXMatrixPerspectiveFovLH(&projMatrix, D3DX_PI / 4, (float)d3dpp.BackBufferWidth / (float)d3dpp.BackBufferHeight, 0.1f / m_setup->scale, 1000.0f / m_setup->scale);
+	D3DXMatrixPerspectiveFovLH(&projMatrix, D3DX_PI / 4, (float)d3dpp.BackBufferWidth / (float)d3dpp.BackBufferHeight, 1.0f * m_setup->scale, 10000.0f * m_setup->scale);
 	m_device->SetTransform(D3DTS_PROJECTION, &projMatrix);
 
 	// Store the display mode details.
@@ -191,9 +191,7 @@ Engine::Engine(EngineSetup *setup)
 	// Create the input object.
 	m_input = new Input(m_window);
 
-	// Create the animation object.
-	m_animation = new CD3DXAnimation(m_device);
-	m_animation->Init(L"data/tiny.x");
+	m_scene - new Scene(m_device);
 
 	// Seed the random number generator with the current time.
 	srand(timeGetTime());
@@ -216,7 +214,7 @@ Engine::~Engine()
 	{
 		// Destroy everything.
 		SAFE_DELETE(m_input);
-
+		SAFE_DELETE(m_scene);
 
 		// Release the device.
 		SAFE_RELEASE(m_device);
@@ -225,6 +223,7 @@ Engine::~Engine()
 	// Uninitialise the COM.
 	CoUninitialize();
 
+	// Uninitialise the imgui.
 	ImGui_ImplDX9_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
@@ -326,14 +325,14 @@ void Engine::Run()
 				frameTime += elapsed;
 				frameCount++;
 
-				// Update the fps every half a second.
-				if (frameTime > 1.0f)
-				{
-					sprintf(m_fpsText, "%d", frameCount);
+				//// Update the fps every half a second.
+				//if (frameTime > 1.0f)
+				//{
+				//	sprintf(m_fpsText, "%d", frameCount);
 
-					frameTime = 0.0f;
-					frameCount = 0;
-				}
+				//	frameTime = 0.0f;
+				//	frameCount = 0;
+				//}
 
 
 				// Update the input object, reading the keyboard and mouse.
@@ -342,6 +341,8 @@ void Engine::Run()
 				// Check if the user wants to make a forced exit.
 				if (m_input->GetKeyPress(DIK_F1))
 					PostQuitMessage(0);
+
+				m_scene->Update();
 
 				// Begin the scene.
 				ImGui::EndFrame();
@@ -357,6 +358,9 @@ void Engine::Run()
 		
 					ImGui::Render();
 					ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+
+					m_scene->Render();
+
 					// End the scene and present it.
 					m_device->EndScene();
 					m_device->Present(NULL, NULL, NULL, NULL);

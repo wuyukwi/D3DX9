@@ -48,6 +48,8 @@ public:
 	//获得矩阵
 	D3DMATRIX GetMatrix() { return m_Matrix; }
 
+	void UpdataMatrix(const LPD3DXMATRIX matrix);
+
 	//获得骨骼动画个数
 	int GetAnimationNum() const;
 

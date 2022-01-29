@@ -30,10 +30,11 @@
 #include "backends\imgui_impl_win32.h"
 
 #include "input.h"
+#include "geometry.h"
 #include "allocatehierarchy.h"
 #include "animation.h"
 #include "animinstance.h"
-
+#include "scene.h"
 
 // --------------------------------------------------
 // ライブラリのリンク
@@ -100,7 +101,7 @@ private:
 
 	Input* m_input;	      // Input object.
 
-	CD3DXAnimation* m_animation;
+	Scene* m_scene;  //scene object
 
 public:
 	Engine(EngineSetup *setup = NULL);

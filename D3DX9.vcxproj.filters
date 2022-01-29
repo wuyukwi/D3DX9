@@ -69,6 +69,9 @@
     <ClCompile Include="animinstance.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="scene.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -111,6 +114,12 @@
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="animinstance.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

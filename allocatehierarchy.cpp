@@ -60,7 +60,7 @@ HRESULT CAllocateHierarchy::GenerateSkinnedMesh(IDirect3DDevice9* pd3dDevice, D3
 	NumMaxFaceInfl = min(NumMaxFaceInfl, 12);
 
 	// デバイス能力取得
-	pd3dDevice = Engine::GetInstance()->GetDevice();
+	//pd3dDevice = Engine::GetInstance()->GetDevice();
 	D3DCAPS9 d3dCaps;
 	pd3dDevice->GetDeviceCaps(&d3dCaps);
 

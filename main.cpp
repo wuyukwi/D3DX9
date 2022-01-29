@@ -18,7 +18,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prev, LPSTR cmdLine, int cmdSho
 	setup.instance = instance;
 	setup.class_name = L"windowClass";
 	setup.window_name = L"Game";
-	setup.scale = 0.01f;
+	setup.scale = 10.0f;
 	setup.screen_width = 1280;
 	setup.screen_height = 720;
 	
