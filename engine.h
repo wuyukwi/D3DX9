@@ -34,7 +34,11 @@
 #include "allocatehierarchy.h"
 #include "animation.h"
 #include "animinstance.h"
+#include "skybox.h"
+#include "player.h"
+#include "camera.h"
 #include "scene.h"
+
 
 // --------------------------------------------------
 // ライブラリのリンク
@@ -87,7 +91,7 @@ private:
 	static Engine* m_instance;
 	char	          m_fpsText[16];  	// Frame rate character string.
 	//Font*		  m_fpsFont;	  	// Font for rendering the frame rate.
-
+	float             m_timeDelta;
 	bool	          m_loaded;		// Indicates if the engine is loading.
 	HWND		      m_window;		// Main window handle.
 	bool	          m_deactive;    	// Indicates if the application is active or not.
@@ -100,7 +104,7 @@ private:
 	bool		   m_stateChanged; 	 // Indicates if the state changed in the current frame.
 
 	Input* m_input;	      // Input object.
-
+	Camera* m_camera;		//Camera boject;
 	Scene* m_scene;  //scene object
 
 public:
@@ -114,10 +118,13 @@ public:
 	void SetDeactiveFlag(bool deactive);
 
 	float		  GetScale();
+	float         GettimeDelta();
 	IDirect3DDevice9* GetDevice();
 	D3DDISPLAYMODE*   GetDisplayMode();
 
 	Input* GetInput();
+	Scene* GetScene();
+	Camera* GetCamera();
 };
 
 

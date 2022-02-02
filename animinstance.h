@@ -15,45 +15,45 @@
 class CAnimInstance
 {
 private:
-	CD3DXAnimation* m_pAnimMesh;
-	LPD3DXANIMATIONCONTROLLER m_pAnimController;
-	D3DXMATRIX		m_Matrix;
-	float m_fSpeed;
-	bool  m_bIsLoop;
+	CD3DXAnimation*				m_pAnimMesh;		// アニメーションへポインター
+	LPD3DXANIMATIONCONTROLLER	m_pAnimController;	// アニメーションへコントローラ
+	D3DXMATRIX					m_MatWorld;			// アニメーションワールドマトリクス
+	float						m_fSpeed;			// アニメーション再生速度
+	bool						m_bIsLoop;			// ループ用
 public:
 	CAnimInstance(void);
 	~CAnimInstance(void);
 
-	//初始化一个动画网格实例,获得动画网格资源指针，并拷贝出一个单独的动画控制器
+	// 初期化して、メッシュへのポインター獲得、アニメーションコントローラーコピー
 	bool Init(CD3DXAnimation* mesh);
 
-	//绘制实例
+	// アニメーション描画
 	void Render();
 
-	//根据名称播放动画
+	// アニメーションネームよりアニメーション再生
 	bool PlayAnimation(LPCTSTR name, bool isLoop = true);
 
-	//更新动画
+	// アニメーション更新
 	void Update(float delayTime);
 
-	//设置动画速度
+	// アニメーションスピード設定
 	void SetSpeed(float speed);
 
-	//获得动画速度
+	// アニメーションスピード獲得
 	float GetSpeed()const { return m_fSpeed; }
 
-	//更新矩阵
+	// マトリクス設定
 	void SetMatrix(const LPD3DXMATRIX matrix);
 
-	//获得矩阵
-	D3DMATRIX GetMatrix() { return m_Matrix; }
+	// マトリクス獲得
+	D3DMATRIX GetMatrix() { return m_MatWorld; }
 
 	void UpdataMatrix(const LPD3DXMATRIX matrix);
 
-	//获得骨骼动画个数
+	// ボーンのアニメーション個数獲得
 	int GetAnimationNum() const;
 
-	//根据动画编号获得动画集
+	// アニメーションインデックスによりID3DXAnimationSet獲得
 	LPD3DXANIMATIONSET GetAnimationSet(int index) const;
 };
 

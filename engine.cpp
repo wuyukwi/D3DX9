@@ -81,6 +81,10 @@ Engine::Engine(EngineSetup *setup)
 	// Create the Direct3D interface.
 	IDirect3D9 *d3d = Direct3DCreate9(D3D_SDK_VERSION);
 
+	RECT rect = { 0, 0, m_setup->screen_width, m_setup->screen_height };		// 画面サイズの構造体
+
+	// クライアント領域を指定のサイズに調整
+	AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
 
 	// ウインドウを作成
 	m_window = CreateWindowEx(
@@ -90,8 +94,8 @@ Engine::Engine(EngineSetup *setup)
 		WS_OVERLAPPEDWINDOW,			// ウインドウスタイル
 		CW_USEDEFAULT,					// ウインドウの左上X座標
 		CW_USEDEFAULT,					// 　　〃　　の左上Y座標
-		m_setup->screen_width,		// 　　〃　　の幅
-		m_setup->screen_height,		// 　　〃　　の高さ
+		(rect.right - rect.left),		// 　　〃　　の幅
+		(rect.bottom - rect.top),		// 　　〃　　の高さ
 		NULL,							// 親ウインドウのハンドル
 		NULL,							// メニューハンドルまたは子ウインドウID
 		wcex.hInstance,				// インスタンスハンドル
@@ -106,8 +110,8 @@ Engine::Engine(EngineSetup *setup)
 		MessageBox(0, L"GetAdapterDisplayMode() - FAILED", 0, 0);
 	}
 
-	//d3dpp.BackBufferWidth = m_setup->screen_width;
-	//d3dpp.BackBufferHeight = m_setup->screen_height;
+	d3dpp.BackBufferWidth = m_setup->screen_width;
+	d3dpp.BackBufferHeight = m_setup->screen_height;
 	d3dpp.BackBufferFormat = d3ddm.Format;
 	d3dpp.BackBufferCount = m_setup->totalBackBuffers;
 	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
@@ -117,7 +121,7 @@ Engine::Engine(EngineSetup *setup)
 	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
 	d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
 	d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;
-	//d3dpp.MultiSampleType = D3DMULTISAMPLE_8_SAMPLES;
+	d3dpp.MultiSampleType = D3DMULTISAMPLE_8_SAMPLES;
 
 	// Create the Direct3D device with hardware vertex processing. 
 	if (FAILED(d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, m_window, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &m_device)))
@@ -176,7 +180,7 @@ Engine::Engine(EngineSetup *setup)
 
 	// Set the projection matrix.
 	D3DXMATRIX projMatrix;
-	D3DXMatrixPerspectiveFovLH(&projMatrix, D3DX_PI / 4, (float)d3dpp.BackBufferWidth / (float)d3dpp.BackBufferHeight, 1.0f * m_setup->scale, 10000.0f * m_setup->scale);
+	D3DXMatrixPerspectiveFovLH(&projMatrix, D3DXToRadian(45.0f), (float)d3dpp.BackBufferWidth / (float)d3dpp.BackBufferHeight, 1.0f * m_setup->scale, 10000.0f * m_setup->scale);
 	m_device->SetTransform(D3DTS_PROJECTION, &projMatrix);
 
 	// Store the display mode details.
@@ -191,7 +195,11 @@ Engine::Engine(EngineSetup *setup)
 	// Create the input object.
 	m_input = new Input(m_window);
 
-	m_scene - new Scene(m_device);
+	// Create the camera object
+	m_camera = new Camera();
+
+	// Create the scene object.
+	m_scene = new Scene(m_device);
 
 	// Seed the random number generator with the current time.
 	srand(timeGetTime());
@@ -255,8 +263,10 @@ void Engine::Run()
 		UpdateWindow(m_window);
 
 		// Our state
-		bool show_demo_window = true;
+		bool show_demo_window = false;
 		bool show_another_window = false;
+		bool show_camera_window = false;
+
 		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 		// Enter the message loop.
@@ -276,9 +286,11 @@ void Engine::Run()
 				ImGui_ImplWin32_NewFrame();
 				ImGui::NewFrame();
 
+#ifdef DEBUG
+
 				// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-				if (show_demo_window)
-					ImGui::ShowDemoWindow(&show_demo_window);
+				/*if (show_demo_window)
+					ImGui::ShowDemoWindow(&show_demo_window);*/
 
 				// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 				{
@@ -288,35 +300,43 @@ void Engine::Run()
 					ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
 					ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-					ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-					ImGui::Checkbox("Another Window", &show_another_window);
+					//ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+					ImGui::Checkbox("Camera Window", &show_camera_window);
 
-					ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-					ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+					//ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+					//ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
-					if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-						counter++;
-					ImGui::SameLine();
-					ImGui::Text("counter = %d", counter);
+					//if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+					//	counter++;
+					//ImGui::SameLine();
+					//ImGui::Text("counter = %d", counter);
 
 					ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 					ImGui::End();
 				}
 
-				// 3. Show another simple window.
-				if (show_another_window)
+				//// 3. Show another simple window.
+				//if (show_another_window)
+				//{
+				//	ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+				//	ImGui::Text("Hello from another window!");
+				//	if (ImGui::Button("Close Me"))
+				//		show_another_window = false;
+				//	ImGui::End();
+				//}
+
+				// 3. Show camera window.
+				if(show_camera_window)
 				{
-					ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-					ImGui::Text("Hello from another window!");
-					if (ImGui::Button("Close Me"))
-						show_another_window = false;
-					ImGui::End();
+					m_camera->imguiUpdate(&show_camera_window);
 				}
+#endif // DEBUG
 
 				// Calculate the elapsed time.
 				unsigned long currentTime = timeGetTime();
 				static unsigned long lastTime = currentTime;
-				float elapsed = (currentTime - lastTime) / 1000.0f;
+				float elapsed = (currentTime - lastTime) *0.001f;
+				m_timeDelta = elapsed;
 				lastTime = currentTime;
 
 				// Calculate the frame rate.
@@ -333,7 +353,8 @@ void Engine::Run()
 				//	frameTime = 0.0f;
 				//	frameCount = 0;
 				//}
-
+			ImGui::Begin("Debug, window!");                         // Create a window called "Hello, world!" and append into it.
+			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
 				// Update the input object, reading the keyboard and mouse.
 				m_input->Update();
@@ -342,7 +363,12 @@ void Engine::Run()
 				if (m_input->GetKeyPress(DIK_F1))
 					PostQuitMessage(0);
 
+
+				// Object update
+				m_camera->Update();
 				m_scene->Update();
+
+			ImGui::End();
 
 				// Begin the scene.
 				ImGui::EndFrame();
@@ -355,12 +381,13 @@ void Engine::Run()
 				m_device->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET), clear_col_dx, 1.0f, 0);
 				if (SUCCEEDED(m_device->BeginScene()))
 				{
-		
-					ImGui::Render();
-					ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+					// Object render
 
 					m_scene->Render();
 
+				
+					ImGui::Render();
+					ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 					// End the scene and present it.
 					m_device->EndScene();
 					m_device->Present(NULL, NULL, NULL, NULL);
@@ -399,6 +426,13 @@ float Engine::GetScale()
 }
 
 //-----------------------------------------------------------------------------
+// Returns the timeDelta
+//-----------------------------------------------------------------------------
+float Engine::GettimeDelta()
+{
+	return m_timeDelta;
+}
+//-----------------------------------------------------------------------------
 // Returns a pointer to the Direct3D device.
 //-----------------------------------------------------------------------------
 IDirect3DDevice9 *Engine::GetDevice()
@@ -420,4 +454,20 @@ D3DDISPLAYMODE *Engine::GetDisplayMode()
 Input *Engine::GetInput()
 {
 	return m_input;
+}
+
+//-----------------------------------------------------------------------------
+// Returns a pointer to the scene object.
+//-----------------------------------------------------------------------------
+Scene* Engine::GetScene()
+{
+	return m_scene;
+}
+
+//-----------------------------------------------------------------------------
+// Returns a pointer to the camera object.
+//-----------------------------------------------------------------------------
+Camera* Engine::GetCamera()
+{
+	return m_camera;
 }

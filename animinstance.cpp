@@ -26,7 +26,7 @@ bool CAnimInstance::Init(CD3DXAnimation* mesh)
 
 void CAnimInstance::Render()
 {
-	m_pAnimMesh->Render(&m_Matrix);
+	m_pAnimMesh->Render(&m_MatWorld);
 }
 
 bool CAnimInstance::PlayAnimation(LPCTSTR name, bool isLoop)
@@ -49,12 +49,12 @@ void CAnimInstance::SetSpeed(float speed)
 
 void CAnimInstance::SetMatrix(const LPD3DXMATRIX matrix)
 {
-	m_Matrix = *matrix;
+	m_MatWorld = *matrix;
 }
 
 void CAnimInstance::UpdataMatrix(const LPD3DXMATRIX matrix)
 {
-	m_Matrix *= *matrix;
+	m_MatWorld *= *matrix;
 }
 
 int CAnimInstance::GetAnimationNum() const

@@ -23,13 +23,11 @@ private:
 	LPDIRECT3DTEXTURE9 m_tex;
 	D3DXMATRIX m_matGround;
 
-	D3DXVECTOR3 m_vEyePt;
 	D3DXVECTOR3 m_vPosGround;
-	const float m_fWalkStep = 10.0f;
-	const float m_fZoomStep = 50.0f;
-
-	CD3DXAnimation* m_animation;
-	CAnimInstance* m_animInstance;
+	//D3DXVECTOR3 m_posPlayer;
+	
+	Skybox* m_skybox;
+	Player* m_player;
 public:
 	Scene(IDirect3DDevice9* device);
 	 ~Scene();
