@@ -69,7 +69,7 @@ Engine::Engine(EngineSetup *setup)
 	wcex.hInstance = m_setup->instance;					// インスタンスハンドル
 	wcex.hIcon = LoadIcon(NULL, IDI_APPLICATION);		// タスクバーのアイコン
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);			// マウスカーソル
-	wcex.hbrBackground = NULL;							// クライアント領域の背景色
+	wcex.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);// クライアント領域の背景色
 	wcex.lpszMenuName = NULL;							// メニューバー
 	wcex.lpszClassName = L"WindowClass";				// ウインドウクラスの名前
 	wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
@@ -114,6 +114,8 @@ Engine::Engine(EngineSetup *setup)
 	d3dpp.BackBufferHeight = m_setup->screen_height;
 	d3dpp.BackBufferFormat = d3ddm.Format;
 	d3dpp.BackBufferCount = m_setup->totalBackBuffers;
+	d3dpp.MultiSampleType = D3DMULTISAMPLE_8_SAMPLES;
+	d3dpp.MultiSampleQuality = 0;
 	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
 	d3dpp.hDeviceWindow = m_window;
 	d3dpp.Windowed = TRUE;
@@ -121,7 +123,7 @@ Engine::Engine(EngineSetup *setup)
 	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
 	d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
 	d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;
-	d3dpp.MultiSampleType = D3DMULTISAMPLE_8_SAMPLES;
+
 
 	// Create the Direct3D device with hardware vertex processing. 
 	if (FAILED(d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, m_window, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &m_device)))
@@ -177,6 +179,16 @@ Engine::Engine(EngineSetup *setup)
 	m_device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_ANISOTROPIC);
 	m_device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);
 	m_device->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
+	//->SetSamplerState(0, D3DSAMP_MAXANISOTROPY, 16);
+
+	/*D3DXVECTOR3 dir(0.707f, -0.707f, 0.707f);
+	D3DXCOLOR col(1.0f, 1.0f, 1.0f, 1.0f);
+	D3DLIGHT9 light = InitDirectionalLight(&dir, &col);
+
+	m_device->SetLight(0, &light);
+	m_device->LightEnable(0, true);
+	m_device->SetRenderState(D3DRS_NORMALIZENORMALS, true);
+	m_device->SetRenderState(D3DRS_SPECULARENABLE, true);*/
 
 	// Set the projection matrix.
 	D3DXMATRIX projMatrix;
@@ -197,6 +209,12 @@ Engine::Engine(EngineSetup *setup)
 
 	// Create the camera object
 	m_camera = new Camera();
+
+	// Create the PSystem object
+	// Create the Firework object
+	m_psystem = new psys::Firework(5000);
+	m_psystem->init(m_device, "data\\tex\\flare.bmp");
+
 
 	// Create the scene object.
 	m_scene = new Scene(m_device);
@@ -222,6 +240,7 @@ Engine::~Engine()
 	{
 		// Destroy everything.
 		SAFE_DELETE(m_input);
+		SAFE_DELETE(m_psystem);
 		SAFE_DELETE(m_scene);
 
 		// Release the device.
@@ -354,8 +373,8 @@ void Engine::Run()
 				//	frameCount = 0;
 				//}
 			ImGui::Begin("Debug, window!");                         // Create a window called "Hello, world!" and append into it.
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
+			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 0.001f * ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 				// Update the input object, reading the keyboard and mouse.
 				m_input->Update();
 
@@ -365,8 +384,15 @@ void Engine::Run()
 
 
 				// Object update
+
+				m_psystem->update(elapsed);
+				if (m_psystem->isDead())
+					m_psystem->reset();
+
 				m_camera->Update();
 				m_scene->Update();
+
+
 
 			ImGui::End();
 
@@ -379,10 +405,12 @@ void Engine::Run()
 				D3DCOLOR clear_col_dx = D3DCOLOR_RGBA((int)(clear_color.x*clear_color.w*255.0f), (int)(clear_color.y*clear_color.w*255.0f), (int)(clear_color.z*clear_color.w*255.0f), (int)(clear_color.w*255.0f));
 
 				m_device->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET), clear_col_dx, 1.0f, 0);
+				//m_device->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000, 1.0f, 0);
 				if (SUCCEEDED(m_device->BeginScene()))
 				{
 					// Object render
 
+					m_psystem->render();
 					m_scene->Render();
 
 				

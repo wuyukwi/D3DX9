@@ -39,15 +39,10 @@ Scene::Scene(IDirect3DDevice9* device)
 	m_player = new Player(m_device);
    
 	// Create the skybox object
-	m_skybox = new Skybox(10000.0f, m_device);
+	m_skybox = new Skybox(1000.0f, m_device);
 
 
 
-    // ステージステートの設定
-    m_device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-    m_device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-    m_device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-    m_device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
     // light off
     m_device->SetRenderState(D3DRS_LIGHTING, false);
@@ -129,15 +124,17 @@ void Scene::Update()
 
 void Scene::Render()
 {
-	m_skybox->Render();
+	//m_skybox->Render();
 
-	//渲染地面
-	m_device->SetTransform(D3DTS_WORLD, &m_matGround);
-	m_device->SetTexture(0, m_tex);
-	m_device->SetStreamSource(0, m_buf, 0, sizeof(CUSTOMVERTEX));
-	m_device->SetFVF(D3DFVF_CUSTOMVERTEX);
-	m_device->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+	////渲染地面
+	//m_device->SetTransform(D3DTS_WORLD, &m_matGround);
+	//m_device->SetTexture(0, m_tex);
+	//m_device->SetStreamSource(0, m_buf, 0, sizeof(CUSTOMVERTEX));
+	//m_device->SetFVF(D3DFVF_CUSTOMVERTEX);
+	//m_device->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+
 
 	// プレイヤーの描画
 	m_player->Render();
+
 }

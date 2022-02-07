@@ -11,7 +11,7 @@
 #include "engine.h"
 
 //-----------------------------------------------------------------------------
-// Skybox render
+// The player class constructor.
 //-----------------------------------------------------------------------------
 Player::Player(IDirect3DDevice9* device)
 {
@@ -30,10 +30,13 @@ Player::Player(IDirect3DDevice9* device)
     m_animInstance = new CAnimInstance();
     m_animInstance->Init(m_animation);
     m_animInstance->SetMatrix(&m_mtxPlayer);
+
+    m_device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SUBTRACT);
+    m_device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 }
 
 //-----------------------------------------------------------------------------
-// Skybox render
+// The skybox class destructor.
 //-----------------------------------------------------------------------------
 Player::~Player()
 {
@@ -41,16 +44,28 @@ Player::~Player()
     SAFE_DELETE(m_animInstance);
 }
 
+//-----------------------------------------------------------------------------
+// The Player class update.
+//-----------------------------------------------------------------------------
 void Player::Update()
 {
-    static float speed = 0.005f;
+    float speed = Engine::GetInstance()->GettimeDelta();
     static float angle = 0.0f;
-
-    
-    ImGui::SliderFloat("animspeed", &speed, 0.001f, 0.1f);
+ 
     ImGui::SliderFloat("angle", &angle, -D3DX_PI, D3DX_PI);
-    ImGui::Text("angle: %.1f )", angle);
+    
+    ImGui::Text("angle: %.1f ", angle);
     ImGui::Text("Player position(%.1f ,%.1f ,%.1f)", m_pos.x, m_pos.y, m_pos.z);
+
+    //// ステージステートの設定
+    //ImGui::Begin("player render");
+    //static int i = 0;
+    //ImGui::SliderInt("i", &i, 0, 26);
+    //m_device->SetTextureStageState(0, D3DTSS_COLOROP, i);
+    ////m_device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SUBTRACT);
+    //m_device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+    //ImGui::End();
+
 
     Input* pinput = Engine::GetInstance()->GetInput();
 
@@ -135,8 +150,22 @@ void Player::Update()
 
 }
 
+//-----------------------------------------------------------------------------
+// Player render.
+//-----------------------------------------------------------------------------
 void Player::Render()
 {
+    //// ステージステートの設定
+    //ImGui::Begin("player render");
+    //static int i=0;
+    //m_device->SetTextureStageState(0, D3DTSS_COLOROP, i);
+    ////m_device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SUBTRACT);
+    //m_device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+    //ImGui::End();
+
     // プレイヤーの描画
     m_animInstance->Render();
+
+   // m_device->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+    //m_device->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 }

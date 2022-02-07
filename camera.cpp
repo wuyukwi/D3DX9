@@ -14,7 +14,7 @@ Camera::Camera()
 	_cameraType = FREE;
 
 	D3DXMatrixIdentity(&_matView);
-	_pos = D3DXVECTOR3(10.0f, 1000.9, -1243.2f);
+	_pos = D3DXVECTOR3(10.0f, 1000.9f, -1350.2f);
 	_right = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
 	_up = D3DXVECTOR3(0.0f, 0.8f, 0.6f);
 	_look = D3DXVECTOR3(0.0f, -0.6f, 0.8f);
@@ -61,6 +61,9 @@ void Camera::Update()
 {
 	Input* pInput = Engine::GetInstance()->GetInput();
 	float timeDelta = Engine::GetInstance()->GettimeDelta();
+
+	
+	this->walk(pInput->GetDeltaWheel() * 0.5f);
 
 	if (pInput->GetKeyPress(DIK_I, true))		
 		this->walk(40.0f * timeDelta);
@@ -139,6 +142,20 @@ void Camera::imguiUpdate(bool* p_open)
 	ImGui::Text("Camera Look(%.1f ,%.1f ,%.1f)", _look.x, _look.y, _look.z);
 
 	ImGui::Separator();
+
+	if (ImGui::Button("position reset"))
+		_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	if (ImGui::Button("_right reset"))
+		_right = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+	
+	if (ImGui::Button("_up reset"))
+		_up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+
+	if (ImGui::Button("_look reset"))
+		_look = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+
+
 
 	if (ImGui::BeginPopupContextWindow())
 	{

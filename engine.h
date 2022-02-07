@@ -18,6 +18,7 @@
 #include <tchar.h>
 #include <windowsx.h>
 #include <iostream>
+#include <list>
 
 #include <d3dx9.h>
 #include <dinput.h>
@@ -31,12 +32,14 @@
 
 #include "input.h"
 #include "geometry.h"
+#include "bounding_volume.h"
 #include "allocatehierarchy.h"
 #include "animation.h"
 #include "animinstance.h"
+#include "camera.h"
+#include "psystem.h"
 #include "skybox.h"
 #include "player.h"
-#include "camera.h"
 #include "scene.h"
 
 
@@ -103,9 +106,10 @@ private:
 
 	bool		   m_stateChanged; 	 // Indicates if the state changed in the current frame.
 
-	Input* m_input;	      // Input object.
-	Camera* m_camera;		//Camera boject;
-	Scene* m_scene;  //scene object
+	Input* m_input;			// Input object.
+	Camera* m_camera;		// Camera object;
+	psys::PSystem* m_psystem;//PSystem object
+	Scene* m_scene;			// scene object
 
 public:
 	Engine(EngineSetup *setup = NULL);
