@@ -1,31 +1,32 @@
 /********************************************************************************* 
 
-  *FileName: player.h  
+  *FileName: enemy.h  
             コウ  キガク
   *Author:  Huang QiYue
   *Version:  1.0
-  *Date:  2022/02/01
+  *Date:  2022/02/08
 
 **********************************************************************************/  
 
-#ifndef PLAYER_H_
-#define PLAYER_H_
 
-class Player
+#ifndef ENEMY_H_
+#define ENEMY_H_
+
+class Enemy
 {
 public:
-	Player();
-	~Player();
+	Enemy(D3DXVECTOR3 pos);
+	~Enemy();
 
 	void Update();
 	void Render();
 
-
+	SceneObject* GetSceneObject();
 private:
-	SceneObject* m_player;
+	SceneObject* m_enemy;
 	BulletManager* m_bullet;
 
-	LPD3DXMESH                 g_pPickMesh;               //用于计算拾取三角形的网格对象
+	LPD3DXMESH                 g_pPickMesh;        //用于计算拾取三角形的网格对象
 	LPDIRECT3DVERTEXBUFFER9    m_vb;              //存放所拾取到的三角形的顶点缓冲区
 	BOOL m_hit;
 
@@ -35,5 +36,4 @@ private:
 };
 
 
-
-#endif // PLAYER_H_
+#endif // ENEMY_H_

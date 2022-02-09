@@ -14,6 +14,8 @@
 
 struct BoundingBox
 {
+	bool isPointInside(D3DXVECTOR3& p);
+
 	D3DXVECTOR3 min;
 	D3DXVECTOR3 max;
 	float       halfSize;

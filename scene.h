@@ -28,6 +28,8 @@ private:
 	
 	Skybox* m_skybox;
 	Player* m_player;
+	Enemy* m_enemy;
+
 public:
 	Scene(IDirect3DDevice9* device);
 	 ~Scene();
@@ -35,6 +37,8 @@ public:
 	void Update();
 	void Render();
 
-	
+	bool RayIntersectScene(D3DXVECTOR3 rayPosition, D3DXVECTOR3 rayDirection, bool checkScene, SceneObject* thisObject, bool checkObjects);
 };
+
+
 #endif // SCENE_H_

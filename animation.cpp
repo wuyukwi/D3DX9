@@ -14,7 +14,8 @@ CD3DXAnimation::CD3DXAnimation(IDirect3DDevice9* device)
 	:m_pDevice(device),
 	m_pAllocateHier(NULL),
 	m_pAnimController(NULL),
-	m_pFrameRoot(NULL)
+	m_pFrameRoot(NULL),
+	m_pOrigMesh(NULL)
 	// m_BoneMatrix(NULL)
 {
 }
@@ -105,6 +106,7 @@ void CD3DXAnimation::DrawMeshContainer(IDirect3DDevice9* pd3dDevice, LPD3DXMESHC
 	D3DXMATRIXA16 matTemp;
 	D3DCAPS9 d3dCaps;
 	pd3dDevice->GetDeviceCaps(&d3dCaps);
+	m_pOrigMesh = pMeshContainer->pOrigMesh;
 
 	// first check for skinning
 	if (pMeshContainer->pSkinInfo != NULL)

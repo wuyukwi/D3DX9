@@ -212,7 +212,7 @@ Engine::Engine(EngineSetup *setup)
 
 	// Create the PSystem object
 	// Create the Firework object
-	m_psystem = new psys::Firework(5000);
+	m_psystem = new psys::Firework(500);
 	m_psystem->init(m_device, "data\\tex\\flare.bmp");
 
 
@@ -398,9 +398,9 @@ void Engine::Run()
 
 				// Begin the scene.
 				ImGui::EndFrame();
-				m_device->SetRenderState(D3DRS_ZENABLE, FALSE);
+			/*	m_device->SetRenderState(D3DRS_ZENABLE, FALSE);
 				m_device->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-				m_device->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+				m_device->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE)*/;
 
 				D3DCOLOR clear_col_dx = D3DCOLOR_RGBA((int)(clear_color.x*clear_color.w*255.0f), (int)(clear_color.y*clear_color.w*255.0f), (int)(clear_color.z*clear_color.w*255.0f), (int)(clear_color.w*255.0f));
 
@@ -410,7 +410,7 @@ void Engine::Run()
 				{
 					// Object render
 
-					m_psystem->render();
+					//m_psystem->render();
 					m_scene->Render();
 
 				

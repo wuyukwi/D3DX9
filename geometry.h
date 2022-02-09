@@ -53,12 +53,14 @@ struct Vertex
 struct LVertex
 {
 	D3DXVECTOR3 translation; // Translation of the vertex (in world space).
+	D3DCOLOR	diffuse;
 	float	    tu;		 // Texture UV coordinates.
 	float	    tv;
 
 	LVertex()
 	{
 		translation = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		diffuse = 0xFFFFFFFF;
 		tu = 0.0f;
 		tv = 0.0f;
 	}
@@ -66,6 +68,7 @@ struct LVertex
 	LVertex(D3DXVECTOR3 t, D3DCOLOR d, float u, float v)
 	{
 		translation = t;
+		diffuse = d;
 		tu = u;
 		tv = v;
 	}
@@ -73,13 +76,41 @@ struct LVertex
 	LVertex(float x, float y, float z, float u, float v)
 	{
 		translation = D3DXVECTOR3(x, y, z);
+		diffuse = 0xFFFFFFFF;
 		tu = u;
 		tv = v;
 	}
 };
-#define L_VERTEX_FVF ( D3DFVF_XYZ  | D3DFVF_TEX1 )
-#define L_VERTEX_FVF_SIZE D3DXGetFVFVertexSize( L_VERTEX_FVF )
+#define L_VERTEX_FVF ( D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1 )
 
+//-----------------------------------------------------------------------------
+// Transformed & Color Vertex Structure
+//-----------------------------------------------------------------------------
+struct TCVertex
+{
+	D3DXVECTOR3 translation; // Translation of the vertex (in world space).
+	D3DCOLOR	 cor;		 
+
+	TCVertex()
+	{
+		translation = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		cor = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	}
+
+	TCVertex(D3DXVECTOR3 t)
+	{
+		translation = t;
+		cor = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	}
+
+	TCVertex(D3DXVECTOR3 t, D3DCOLOR cor)
+	{
+		translation = t;
+		this->cor = cor;
+	}
+
+};
+#define TC_VERTEX_FVF ( D3DFVF_XYZ  | D3DFVF_DIFFUSE )
 
 struct  CUSTOMVERTEX
 {

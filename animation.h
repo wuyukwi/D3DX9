@@ -19,6 +19,7 @@ private:
 	CAllocateHierarchy* m_pAllocateHier;			// アニメーションメッシュ
 	LPD3DXFRAME			m_pFrameRoot;				// フレーム
 	LPD3DXANIMATIONCONTROLLER m_pAnimController;	// アニメーションコントローラー
+	LPD3DXMESH m_pOrigMesh;							// メッシュ
 private:
 
 	void DrawMeshContainer(IDirect3DDevice9* pd3dDevice, LPD3DXMESHCONTAINER pMeshContainerBase, LPD3DXFRAME pFrameBase);
@@ -34,12 +35,14 @@ public:
 	// ボーンアニメーション初期化
 	bool Init(LPCTSTR filename);
 
-	//　ボーンコントローラーコーピ
+	//　ボーンコントローラーコピー
 	LPD3DXANIMATIONCONTROLLER CloneAnimCtrl(void);
 
 	// ボーンアニメーション描画
 	void Render(const LPD3DXMATRIX matrix);
 
+	// メッシュ情報の取得
+	LPD3DXMESH GetOrigMesh()const { return m_pOrigMesh; }
 };
 
 

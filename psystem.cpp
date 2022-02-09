@@ -332,12 +332,12 @@ void Snow::resetParticle(Attribute* attribute)
 	// get random x, z coordinate for the position of the snow flake.
 	GetRandomVector(
 		&attribute->_position,
-		&_boundingBox._min,
-		&_boundingBox._max);
+		&_boundingBox.min,
+		&_boundingBox.max);
 
 	// no randomness for height (y-coordinate).  Snow flake
 	// always starts at the top of bounding box.
-	attribute->_position.y = _boundingBox._max.y; 
+	attribute->_position.y = _boundingBox.max.y; 
 
 	// snow flakes fall downwards and slightly to the left
 	attribute->_velocity.x = GetRandomFloat(0.0f, 1.0f) * -3.0f;
@@ -372,7 +372,7 @@ void Snow::update(float timeDelta)
 Firework::Firework(int numParticles)
 {
 	_origin        = D3DXVECTOR3(0.0f,100.0f,0.0f);
-	_size          = 2.0f;
+	_size          = 10.0f;
 	_vbSize        = 2048;
 	_vbOffset      = 0;   
 	_vbBatchSize   = 512; 

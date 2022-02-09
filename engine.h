@@ -19,6 +19,7 @@
 #include <windowsx.h>
 #include <iostream>
 #include <list>
+#include <vector>
 
 #include <d3dx9.h>
 #include <dinput.h>
@@ -31,14 +32,18 @@
 #include "backends\imgui_impl_win32.h"
 
 #include "input.h"
+#include "linked_list.h"
 #include "geometry.h"
 #include "bounding_volume.h"
 #include "allocatehierarchy.h"
 #include "animation.h"
 #include "animinstance.h"
+#include "sceneobject.h"
 #include "camera.h"
 #include "psystem.h"
 #include "skybox.h"
+#include "bullet.h"
+#include "enemy.h"
 #include "player.h"
 #include "scene.h"
 

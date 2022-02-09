@@ -46,9 +46,12 @@ public:
 	void SetMatrix(const LPD3DXMATRIX matrix);
 
 	// マトリクス獲得
-	D3DMATRIX GetMatrix() { return m_MatWorld; }
+	const D3DMATRIX& GetMatrix() const { return m_MatWorld; }
 
 	void UpdataMatrix(const LPD3DXMATRIX matrix);
+	
+	// メッシュ情報の取得
+	LPD3DXMESH GetOrigMesh();
 
 	// ボーンのアニメーション個数獲得
 	int GetAnimationNum() const;

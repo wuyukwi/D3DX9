@@ -154,7 +154,10 @@
     <ClCompile Include="animinstance.cpp" />
     <ClCompile Include="backends\imgui_impl_dx9.cpp" />
     <ClCompile Include="backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="bounding_volume.cpp" />
+    <ClCompile Include="bullet.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="enemy.cpp" />
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
@@ -166,6 +169,7 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="psystem.cpp" />
     <ClCompile Include="scene.cpp" />
+    <ClCompile Include="sceneobject.cpp" />
     <ClCompile Include="skybox.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -177,6 +181,7 @@
     <ClInclude Include="bounding_volume.h" />
     <ClInclude Include="bullet.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="enemy.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="geometry.h" />
     <ClInclude Include="imgui\imconfig.h" />
@@ -186,10 +191,12 @@
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="input.h" />
+    <ClInclude Include="linked_list.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="psystem.h" />
     <ClInclude Include="scene.h" />
+    <ClInclude Include="sceneobject.h" />
     <ClInclude Include="skybox.h" />
   </ItemGroup>
   <ItemGroup>

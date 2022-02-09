@@ -36,12 +36,12 @@ Scene::Scene(IDirect3DDevice9* device)
     D3DXCreateTextureFromFileA(m_device, "data\\floor.jpg", &m_tex);
 
 	// Create the player object
-	m_player = new Player(m_device);
+	m_player = new Player();
    
 	// Create the skybox object
 	m_skybox = new Skybox(1000.0f, m_device);
 
-
+	m_enemy = new Enemy{ D3DXVECTOR3(100.0,0.0f,100.0f)};
 
 
     // light off
@@ -60,6 +60,7 @@ void Scene::Update()
 {
 	
 	m_player->Update();
+	m_enemy->Update();
 
 	//设置世界矩阵
 	static D3DXMATRIXA16 matWorld;
@@ -136,5 +137,26 @@ void Scene::Render()
 
 	// プレイヤーの描画
 	m_player->Render();
+	m_enemy->Render();
+}
 
+//-----------------------------------------------------------------------------
+// Returns the result of a ray intersection with the scene and all its objects.
+//-----------------------------------------------------------------------------
+bool Scene::RayIntersectScene(D3DXVECTOR3 rayPosition, D3DXVECTOR3 rayDirection, bool checkScene, SceneObject* thisObject, bool checkObjects)
+{
+	float hitDistance = 0.0f;
+
+	// Check if the ray needs to check for intersection with the scene.
+	//if (checkScene == true)
+		//RecursiveSceneRayCheck(m_firstLeaf, result, rayPosition, rayDirection, &hitDistance);
+
+	// Check if the ray needs to check for intersection with the objects.
+	if (checkObjects == true)
+	{
+		BOOL hit;
+		D3DXIntersect(m_enemy->GetSceneObject()->GetMesh()->GetOrigMesh(), &rayPosition, &rayDirection, &hit, NULL, NULL, NULL, &hitDistance, NULL, NULL);
+		if (hit)
+			return true;
+	}
 }
