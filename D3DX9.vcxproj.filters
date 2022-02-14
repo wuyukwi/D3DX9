@@ -57,23 +57,65 @@
     <ClCompile Include="backends\imgui_impl_win32.cpp">
       <Filter>Engine\imgui\backends</Filter>
     </ClCompile>
-    <ClCompile Include="input.cpp">
+    <ClCompile Include="Bullet.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatedObject.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="allocatehierarchy.cpp">
+    <ClCompile Include="BoundingVolume.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="animation.cpp">
+    <ClCompile Include="Font.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="animinstance.cpp">
+    <ClCompile Include="Input.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="bounding_volume.cpp">
+    <ClCompile Include="Material.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="geometry.cpp">
+    <ClCompile Include="ViewFrustum.cpp">
       <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderCache.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneObject.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripting.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnerObject.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="State.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerObject.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -107,53 +149,77 @@
     <ClInclude Include="backends\imgui_impl_win32.h">
       <Filter>Engine\imgui\backends</Filter>
     </ClInclude>
-    <ClInclude Include="input.h">
+    <ClInclude Include="AnimatedObject.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="allocatehierarchy.h">
+    <ClInclude Include="BoundingVolume.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="animation.h">
+    <ClInclude Include="Mesh.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="animinstance.h">
+    <ClInclude Include="CollisionDetection.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scene_manager.h">
+    <ClInclude Include="Font.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bounding_volume.h">
+    <ClInclude Include="Geometry.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="geometry.h">
+    <ClInclude Include="Input.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="linkedlist.h">
+    <ClInclude Include="LinkedList.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scene_object.h">
+    <ClInclude Include="Material.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mesh.h">
+    <ClInclude Include="RenderCache.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="material.h">
+    <ClInclude Include="ResourceManagement.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource_management.h">
+    <ClInclude Include="SceneManager.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="render_cache.h">
+    <ClInclude Include="SceneObject.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="view_frustum.h">
+    <ClInclude Include="Scripting.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="spawner_object.h">
+    <ClInclude Include="SpawnerObject.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scripting.h">
+    <ClInclude Include="State.h">
       <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewFrustum.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerObject.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapon.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

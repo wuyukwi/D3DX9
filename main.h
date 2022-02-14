@@ -15,4 +15,11 @@
 #include <Windows.h>
 #include "Engine.h"
 
+#include "Bullet.h"
+#include "Weapon.h"
+#include "PlayerObject.h"
+#include "PlayerManager.h"
+#include "Menu.h"
+#include "Game.h"
+
 #endif // MAIN_H_

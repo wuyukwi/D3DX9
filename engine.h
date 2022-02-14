@@ -29,37 +29,25 @@
 #include "backends\imgui_impl_dx9.h"
 #include "backends\imgui_impl_win32.h"
 
-//#include "input.h"
-//#include "linkedlist.h"
-//#include "geometry.h"
-//#include "scripting.h"
-//#include "scene_object.h"
-//#include "spawner_object.h"
-//#include "bounding_volume.h"
-//#include "scene_manager.h"
-//#include "mesh.h"
-//#include "resource_management.h"
-//#include "material.h"
-//#include "view_frustum.h"
-//#include "render_cache.h"
-#include "allocatehierarchy.h"
-#include "animation.h"
-#include "animinstance.h"
-
-
+#include "camera.h"
 #include "LinkedList.h"
-#include "resource_management.h"
+#include "ResourceManagement.h"
 #include "Geometry.h"
+#include "Font.h"
 #include "Scripting.h"
 #include "Input.h"
-#include "Bounding_Volume.h"
+#include "BoundingVolume.h"
 #include "Material.h"
 #include "Mesh.h"
-#include "Scene_Object.h"
-#include "Spawner_Object.h"
-#include "View_Frustum.h"
-#include "Render_Cache.h"
-#include "Scene_Manager.h"
+#include "SceneObject.h"
+#include "AnimatedObject.h"
+#include "SpawnerObject.h"
+#include "ViewFrustum.h"
+#include "RenderCache.h"
+#include "SceneManager.h"
+#include "CollisionDetection.h"
+#include "State.h"
+
 // --------------------------------------------------
 // ライブラリのリンク
 // --------------------------------------------------
@@ -69,66 +57,108 @@
 #pragma comment(lib, "winmm.lib")		// システム時刻取得に必要
 #pragma comment(lib, "dinput8.lib")		// 入力処理に必要
 
+////-----------------------------------------------------------------------------
+//// Engine Setup Structure
+////-----------------------------------------------------------------------------
+//struct EngineSetup
+//{
+//	HINSTANCE	instance; 	    // Application instance handle.
+//	wchar_t*		class_name;		// ウインドウスタイルの名前
+//	wchar_t*		window_name;	// ウインドウの名前
+//	unsigned char totalBackBuffers; // Number of back buffers to use.
+//	float		  scale;            // Unit scale in meters/unit.
+//	int			screen_width;	// ウインドウの幅
+//	int			screen_height;	// ウインドウの高さ
+//
+//	void (*StateSetup)();								  // State setup function.
+//	//void (*CreateMaterialResource)( Material **resource, char *name, char *path ); // Material resource creation function.	
+//
+//	//-------------------------------------------------------------------------
+//	// The engine setup structure constructor.
+//	//-------------------------------------------------------------------------
+//	EngineSetup()
+//	{
+//
+//		instance = NULL;
+//		class_name = L"Application";
+//		window_name = L"Game";
+//		totalBackBuffers = 1;
+//		scale = 1.0f;
+//		screen_width = 1280;
+//		screen_height = 720;
+//		StateSetup = NULL;
+//	}
+//};
+
 //-----------------------------------------------------------------------------
-// Engine Setup Structure
+// Engine Setup 構造体
 //-----------------------------------------------------------------------------
 struct EngineSetup
 {
-	HINSTANCE	instance; 	    // Application instance handle.
-	wchar_t*		class_name;		// ウインドウスタイルの名前
-	wchar_t*		window_name;	// ウインドウの名前
-	unsigned char totalBackBuffers; // Number of back buffers to use.
-	float		  scale;            // Unit scale in meters/unit.
+	HINSTANCE	  instance; 	    // アプリケーションインスタンスハンドル。
+	char* name;				// アプリケーションインネーム
+	float		  scale;            // 単位スケール。(メートル/単位)
+	unsigned char 	  totalBackBuffers; // 使用するバックバッファの数。
+	char* spawnerPath;	    // スクリプトオブジェクトのパス。
 	int			screen_width;	// ウインドウの幅
 	int			screen_height;	// ウインドウの高さ
 
-	void (*StateSetup)();								  // State setup function.
-	//void (*CreateMaterialResource)( Material **resource, char *name, char *path ); // Material resource creation function.	
+	void (*StateSetup)();								  // ステートセットアップ関数
+	//void (*CreateMaterialResource)(Material** resource, char* name, char* path); // マテリアルソース作成関数
 
 	//-------------------------------------------------------------------------
-	// The engine setup structure constructor.
+	// EngineSetup構造コンストラクター。
 	//-------------------------------------------------------------------------
 	EngineSetup()
 	{
-
 		instance = NULL;
-		class_name = L"Application";
-		window_name = L"Game";
-		totalBackBuffers = 1;
+		name = "Application";
 		scale = 1.0f;
+		totalBackBuffers = 1;
+		StateSetup = NULL;
+		spawnerPath = "./";
 		screen_width = 1280;
 		screen_height = 720;
-		StateSetup = NULL;
+
 	}
 };
 
 //-----------------------------------------------------------------------------
-// Engine Class
+// Engine クラス
 //-----------------------------------------------------------------------------
 class Engine
 {
 private:
 	static Engine* m_instance;
-	char	          m_fpsText[16];  	// Frame rate character string.
-	//Font*		  m_fpsFont;	  	// Font for rendering the frame rate.
+	char	          m_fpsText[16];  	// フレームレート格納の文字列。
+	Font* m_fpsFont;	  	// フレームレートを描画するためのフォント。
 
-	bool	          m_loaded;		// Indicates if the engine is loading.
-	HWND		      m_window;		// Main window handle.
-	bool	          m_deactive;    	// Indicates if the application is active or not.
+	bool	          m_loaded;		// エンジンがロードされているかどうか
+	HWND		  m_window;		// メインウィンドウのハンドル。
+	bool	          m_deactive;    	// アプリケーションがアクティブかどうか
 
-	EngineSetup*      m_setup;		// Copy of the engine setup structure.
-	IDirect3DDevice9* m_device;		// Direct3D device interface.
-	D3DDISPLAYMODE	  m_displayMode; 	// Display mode of the current Direct3D device.
-	unsigned char	  m_currentBackBuffer;  // Keeps track of which back buffer is at the front of the swap chain.	
+	EngineSetup* m_setup;		// エンジンセットアップ構造のコピー。
+	IDirect3DDevice9* m_device;		// Direct3Dデバイスインターフェイス。
+	D3DDISPLAYMODE	  m_displayMode; 	// 現在のDirect3Dデバイスの表示モード。
+	ID3DXSprite* m_sprite;		// 2Dテクスチャプリミティブを描画するためのスプライトインターフェイス。
+	unsigned char	  m_currentBackBuffer;  // どのバックバッファがスワップチェーンの先頭にあるかを追跡します。
 
-	bool		   m_stateChanged; 	 // Indicates if the state changed in the current frame.
+	LinkedList<State>* m_states;		 // ステートのリンクリスト
+	State* m_currentState; 	 // 現在のステートへのポインタ。
+	bool		   m_stateChanged; 	 // 現在のフレームでステートが変化したかどうか
+
+	ResourceManager<Script>* m_scriptManager;   // Script manager.
+	ResourceManager<Material>* m_materialManager; // Material manager.
+	ResourceManager<Mesh>* m_meshManager;     // Mesh manager.
 
 	Input* m_input;	      // Input object.
-	CD3DXAnimation* m_animation;
 	SceneManager* m_sceneManager; // Scene manager.
 
+	Camera* m_camera;
+	D3DXMATRIX m_view;
+
 public:
-	Engine(EngineSetup *setup = NULL);
+	Engine(EngineSetup* setup = NULL);
 	virtual ~Engine();
 
 	void	       Run();
@@ -139,7 +169,17 @@ public:
 
 	float		  GetScale();
 	IDirect3DDevice9* GetDevice();
-	D3DDISPLAYMODE*   GetDisplayMode();
+	D3DDISPLAYMODE* GetDisplayMode();
+	ID3DXSprite* GetSprite();
+
+	void   AddState(State* state, bool change = true);
+	void   RemoveState(State* state);
+	void   ChangeState(unsigned long id);
+	State* GetCurrentState();
+
+	ResourceManager<Script>* GetScriptManager();
+	ResourceManager<Material>* GetMaterialManager();
+	ResourceManager<Mesh>* GetMeshManager();
 
 	Input* GetInput();
 	SceneManager* GetSceneManager();
@@ -149,6 +189,6 @@ public:
 //-----------------------------------------------------------------------------
 // Externals
 //-----------------------------------------------------------------------------
-extern Engine *g_engine;
+extern Engine* g_engine;
 
 #endif // ENGINE_H_

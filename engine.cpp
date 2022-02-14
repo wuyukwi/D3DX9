@@ -13,7 +13,7 @@
 Engine * Engine::m_instance = NULL;
 
 //-----------------------------------------------------------------------------
-// Handles Windows messages.
+// Windowsメッセージを処理します。
 //-----------------------------------------------------------------------------
 // Forward declare message handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -47,16 +47,16 @@ Engine::Engine(EngineSetup *setup)
 	// Create application window
 	//ImGui_ImplWin32_EnableDpiAwareness();
 	
-	// Indicate that the engine is not yet loaded.
+	// エンジンがまだロードされていない
 	m_loaded = false;
 
-	// If no setup structure was passed in, then create a default one.
-	// Otehrwise, make a copy of the passed in structure.
+	//Setup構造が渡されなかった場合は、デフォルトの構造を作成します。
+	//ある場合は、渡された構造のコピーを作成します。
 	m_setup = new EngineSetup;
 	if (setup != NULL)
 		memcpy(m_setup, setup, sizeof(EngineSetup));
 
-	// Store a pointer to the engine in a global variable for easy access.
+	// 簡単にアクセスできるように、エンジンへのポインタをグローバル変数に格納します。
 	m_instance = this;
 
 	// ウインドウクラスの構造体
@@ -71,7 +71,7 @@ Engine::Engine(EngineSetup *setup)
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);			// マウスカーソル
 	wcex.hbrBackground = NULL;							// クライアント領域の背景色
 	wcex.lpszMenuName = NULL;							// メニューバー
-	wcex.lpszClassName = L"WindowClass";				// ウインドウクラスの名前
+	wcex.lpszClassName = "WindowClass";				// ウインドウクラスの名前
 	wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 	RegisterClassEx(&wcex);
 
@@ -84,9 +84,9 @@ Engine::Engine(EngineSetup *setup)
 
 	// ウインドウを作成
 	m_window = CreateWindowEx(
-		0,								// 拡張ウインドウスタイル
-		m_setup->class_name,		// ウインドウスタイルの名前
-		m_setup->window_name,		// ウインドウの名前
+		0,							// 拡張ウインドウスタイル
+		"WindowClass",				// ウインドウスタイルの名前
+		m_setup->name,		// ウインドウの名前
 		WS_OVERLAPPEDWINDOW,			// ウインドウスタイル
 		CW_USEDEFAULT,					// ウインドウの左上X座標
 		CW_USEDEFAULT,					// 　　〃　　の左上Y座標
@@ -94,7 +94,7 @@ Engine::Engine(EngineSetup *setup)
 		m_setup->screen_height,		// 　　〃　　の高さ
 		NULL,							// 親ウインドウのハンドル
 		NULL,							// メニューハンドルまたは子ウインドウID
-		wcex.hInstance,				// インスタンスハンドル
+		m_setup->instance,				// インスタンスハンドル
 		NULL);							// ウインドウ作成データ
 
 	// Prepare the device presentation parameters.
@@ -103,7 +103,7 @@ Engine::Engine(EngineSetup *setup)
 	D3DDISPLAYMODE d3ddm;				// ディスプレイモード
 	if (d3d->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &d3ddm))
 	{// 現在のディスプレイモードを取得
-		MessageBox(0, L"GetAdapterDisplayMode() - FAILED", 0, 0);
+		MessageBox(0, "GetAdapterDisplayMode() - FAILED", 0, 0);
 	}
 
 	//d3dpp.BackBufferWidth = m_setup->screen_width;
@@ -188,12 +188,29 @@ Engine::Engine(EngineSetup *setup)
 	// The swap chain always starts on the first back buffer.
 	m_currentBackBuffer = 0;
 
+	// Create the sprite interface.
+	D3DXCreateSprite(m_device, &m_sprite);
+
+	// Create the font to display the frame rate.
+	m_fpsFont = new Font();
+
+	// Create the linked lists of states.
+	m_states = new LinkedList< State >;
+	m_currentState = NULL;
+
+	// Create the resource managers.
+	m_scriptManager = new ResourceManager< Script >;
+	m_materialManager = new ResourceManager< Material >;
+	m_meshManager = new ResourceManager< Mesh >;
+
 	// Create the input object.
 	m_input = new Input(m_window);
 
-	// Create the animation object
-	m_animation = new CD3DXAnimation(m_device);
-	m_animation->Init(L"data/tiny.x");
+	// Create the scene manager.
+	m_sceneManager = new SceneManager(m_setup->scale, m_setup->spawnerPath);
+
+	m_camera = new Camera();
+	m_camera->getViewMatrix(&m_view);
 
 	// Seed the random number generator with the current time.
 	srand(timeGetTime());
@@ -214,9 +231,23 @@ Engine::~Engine()
 	// Ensure the engine is loaded.
 	if (m_loaded == true)
 	{
-		// Destroy everything.
-		SAFE_DELETE(m_input);
+		// Destroy the states linked lists.
+		if (m_currentState != NULL)
+			m_currentState->Close();
+		SAFE_DELETE(m_states);
 
+		// Destroy everything.
+		SAFE_DELETE(m_sceneManager);
+		SAFE_DELETE(m_input);
+		SAFE_DELETE(m_meshManager);
+		SAFE_DELETE(m_materialManager);
+		SAFE_DELETE(m_scriptManager);
+
+		// Destroy the font used for the frame rate.
+		SAFE_DELETE(m_fpsFont);
+
+		// Release the sprite interface.
+		SAFE_RELEASE(m_sprite);
 
 		// Release the device.
 		SAFE_RELEASE(m_device);
@@ -230,7 +261,7 @@ Engine::~Engine()
 	ImGui::DestroyContext();
 
 	// Unregister the window class.
-	UnregisterClass(L"WindowClass", m_setup->instance);
+	UnregisterClass("WindowClass", m_setup->instance);
 
 	// Destroy the engine setup structure.
 	SAFE_DELETE(m_setup);
@@ -254,6 +285,9 @@ void Engine::Run()
 		// Show the window.
 		ShowWindow(m_window, SW_NORMAL);
 		UpdateWindow(m_window);
+
+		// Used to retrieve details about the viewer from the application.
+		ViewerSetup viewer;
 
 		// Our state
 		bool show_demo_window = true;
@@ -343,6 +377,77 @@ void Engine::Run()
 				if (m_input->GetKeyPress(DIK_F1))
 					PostQuitMessage(0);
 
+				// Request the viewer from the current state, if there is one.
+				if (m_currentState != NULL)
+					m_currentState->RequestViewer(&viewer);
+
+
+				//// ビューアが有効であることを確認
+				//if (viewer.viewer != NULL)
+				//{
+				//	// Update the scene.
+				//	m_sceneManager->Update(elapsed, viewer.viewer->GetViewMatrix());
+
+				//	// Set the view transformation.
+				//	m_device->SetTransform(D3DTS_VIEW, viewer.viewer->GetViewMatrix());
+				//}
+
+				// ビューアが有効であることを確認
+				if (m_camera != NULL)
+				{
+					if (::GetAsyncKeyState('W') & 0x8000f)
+						m_camera->walk(4.0f * elapsed);
+
+					if (::GetAsyncKeyState('S') & 0x8000f)
+						m_camera->walk(-4.0f * elapsed);
+
+					if (::GetAsyncKeyState('A') & 0x8000f)
+						m_camera->strafe(-4.0f * elapsed);
+
+					if (::GetAsyncKeyState('D') & 0x8000f)
+						m_camera->strafe(4.0f * elapsed);
+
+					if (::GetAsyncKeyState('R') & 0x8000f)
+						m_camera->fly(4.0f * elapsed);
+
+					if (::GetAsyncKeyState('F') & 0x8000f)
+						m_camera->fly(-4.0f * elapsed);
+
+					if (::GetAsyncKeyState(VK_UP) & 0x8000f)
+						m_camera->pitch(1.0f * elapsed);
+
+					if (::GetAsyncKeyState(VK_DOWN) & 0x8000f)
+						m_camera->pitch(-1.0f * elapsed);
+
+					if (::GetAsyncKeyState(VK_LEFT) & 0x8000f)
+						m_camera->yaw(-1.0f * elapsed);
+
+					if (::GetAsyncKeyState(VK_RIGHT) & 0x8000f)
+						m_camera->yaw(1.0f * elapsed);
+
+					if (::GetAsyncKeyState('N') & 0x8000f)
+						m_camera->roll(1.0f * elapsed);
+
+					if (::GetAsyncKeyState('M') & 0x8000f)
+						m_camera->roll(-1.0f * elapsed);
+
+					m_camera->getViewMatrix(&m_view);
+
+					// Update the scene.
+					m_sceneManager->Update(elapsed, &m_view);
+
+					// Set the view transformation.
+					m_device->SetTransform(D3DTS_VIEW, &m_view);
+				}
+
+				// Update the current state (if there is one), taking state
+				// changes into account.
+				m_stateChanged = false;
+				if (m_currentState != NULL)
+					m_currentState->Update(elapsed);
+				if (m_stateChanged == true)
+					continue;
+
 				// Begin the scene.
 				ImGui::EndFrame();
 				m_device->SetRenderState(D3DRS_ZENABLE, FALSE);
@@ -354,9 +459,23 @@ void Engine::Run()
 				m_device->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET), clear_col_dx, 1.0f, 0);
 				if (SUCCEEDED(m_device->BeginScene()))
 				{
+					// Render the scene, if there is a valid viewer.
+					/*if (viewer.viewer != NULL)
+						m_sceneManager->Render(elapsed, viewer.viewer->GetTranslation());*/
+					if (m_camera != NULL)
+					m_sceneManager->Render(elapsed, m_camera->getPosition());
+
+					// Render the current state, if there is one.
+					if (m_currentState != NULL)
+						m_currentState->Render();
 		
+					// Render the frame rate.
+					m_fpsFont->Render(m_fpsText, 0, 0);
+
+					// ImGui描画
 					ImGui::Render();
 					ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+
 					// End the scene and present it.
 					m_device->EndScene();
 					m_device->Present(NULL, NULL, NULL, NULL);
@@ -397,7 +516,7 @@ float Engine::GetScale()
 //-----------------------------------------------------------------------------
 // Returns a pointer to the Direct3D device.
 //-----------------------------------------------------------------------------
-IDirect3DDevice9 *Engine::GetDevice()
+IDirect3DDevice9* Engine::GetDevice()
 {
 	return m_device;
 }
@@ -405,15 +524,116 @@ IDirect3DDevice9 *Engine::GetDevice()
 //-----------------------------------------------------------------------------
 // Returns a pointer to the display mode of the current Direct3D device.
 //-----------------------------------------------------------------------------
-D3DDISPLAYMODE *Engine::GetDisplayMode()
+D3DDISPLAYMODE* Engine::GetDisplayMode()
 {
 	return &m_displayMode;
 }
 
 //-----------------------------------------------------------------------------
+// Returns a pointer to the sprite interface.
+//-----------------------------------------------------------------------------
+ID3DXSprite* Engine::GetSprite()
+{
+	return m_sprite;
+}
+
+//-----------------------------------------------------------------------------
+// Adds a state to the engine.
+//-----------------------------------------------------------------------------
+void Engine::AddState(State* state, bool change)
+{
+	m_states->Add(state);
+
+	if (change == false)
+		return;
+
+	if (m_currentState != NULL)
+		m_currentState->Close();
+
+	m_currentState = m_states->GetLast();
+	m_currentState->Load();
+}
+
+//-----------------------------------------------------------------------------
+// Removes a state from the engine
+//-----------------------------------------------------------------------------
+void Engine::RemoveState(State* state)
+{
+	m_states->Remove(&state);
+}
+
+//-----------------------------------------------------------------------------
+// Changes processing to the state with the specified ID.
+//-----------------------------------------------------------------------------
+void Engine::ChangeState(unsigned long id)
+{
+	// Iterate through the list of states and find the new state to change to.
+	m_states->Iterate(true);
+	while (m_states->Iterate() != NULL)
+	{
+		if (m_states->GetCurrent()->GetID() == id)
+		{
+			// Close the old state.
+			if (m_currentState != NULL)
+				m_currentState->Close();
+
+			// Set the new current state and load it.
+			m_currentState = m_states->GetCurrent();
+			m_currentState->Load();
+
+			// Swap the back buffers until the first one is in the front.
+			while (m_currentBackBuffer != 0)
+			{
+				m_device->Present(NULL, NULL, NULL, NULL);
+
+				if (++m_currentBackBuffer == m_setup->totalBackBuffers + 1)
+					m_currentBackBuffer = 0;
+			}
+
+			// Indicate that the state has changed.
+			m_stateChanged = true;
+
+			break;
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Returns a pointer to the current state.
+//-----------------------------------------------------------------------------
+State* Engine::GetCurrentState()
+{
+	return m_currentState;
+}
+
+//-----------------------------------------------------------------------------
+// Returns a pointer to the script manager.
+//-----------------------------------------------------------------------------
+ResourceManager< Script >* Engine::GetScriptManager()
+{
+	return m_scriptManager;
+}
+
+//-----------------------------------------------------------------------------
+// Returns a pointer to the material manager.
+//-----------------------------------------------------------------------------
+ResourceManager< Material >* Engine::GetMaterialManager()
+{
+	return m_materialManager;
+}
+
+//-----------------------------------------------------------------------------
+// Returns a pointer to the mesh manager.
+//-----------------------------------------------------------------------------
+ResourceManager< Mesh >* Engine::GetMeshManager()
+{
+	return m_meshManager;
+}
+
+//-----------------------------------------------------------------------------
 // Returns a pointer to the input object.
 //-----------------------------------------------------------------------------
-Input *Engine::GetInput()
+Input* Engine::GetInput()
 {
 	return m_input;
 }

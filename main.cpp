@@ -10,15 +10,26 @@
 
 #include "main.h"
 
+
+void StateSetup()
+{
+	Engine::GetInstance()->AddState(new Menu, false);
+	Engine::GetInstance()->AddState(new Game, true);
+}
+
+
+
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE prev, LPSTR cmdLine, int cmdShow)
 {
 
 	// Create the engine setup structure.
 	EngineSetup setup;
 	setup.instance = instance;
-	setup.class_name = L"windowClass";
-	setup.window_name = L"Game";
+	setup.name = "Cityscape";
 	setup.scale = 0.01f;
+	setup.totalBackBuffers = 1;
+	setup.StateSetup = StateSetup;
+	setup.spawnerPath = "./Assets/Objects/";
 	setup.screen_width = 1280;
 	setup.screen_height = 720;
 	

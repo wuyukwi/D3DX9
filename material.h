@@ -1,16 +1,10 @@
-/********************************************************************************* 
+//-----------------------------------------------------------------------------
+// Material Class
+//-----------------------------------------------------------------------------
 
-  *FileName: material.h  
-            コウ  キガク
-  *Author:  Huang QiYue
-  *Version:  1.0
-  *Date:  2022/01/28
+#ifndef MATERIAL_H
+#define MATERIAL_H
 
-**********************************************************************************/  
-
-
-#ifndef MATERIAL_H_
-#define MATERIAL_H_
 
 class Material : public Resource< Material >
 {
@@ -29,7 +23,7 @@ public:
 	virtual ~Material();
 
 	IDirect3DTexture9* GetTexture();
-	D3DMATERIAL9* GetLighting();
+	D3DMATERIAL9*	   GetLighting();
 	unsigned long	   GetWidth();
 	unsigned long	   GetHeight();
 	bool		   GetIgnoreFace();
@@ -37,5 +31,4 @@ public:
 	bool		   GetIgnoreRay();
 };
 
-
-#endif // MATERIAL_H_
+#endif

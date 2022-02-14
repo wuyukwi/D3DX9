@@ -29,14 +29,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -89,7 +89,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -118,7 +118,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -145,49 +145,71 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="allocatehierarchy.cpp" />
-    <ClCompile Include="animation.cpp" />
-    <ClCompile Include="animinstance.cpp" />
+    <ClCompile Include="AnimatedObject.cpp" />
     <ClCompile Include="backends\imgui_impl_dx9.cpp" />
     <ClCompile Include="backends\imgui_impl_win32.cpp" />
-    <ClCompile Include="bounding_volume.cpp" />
+    <ClCompile Include="BoundingVolume.cpp" />
+    <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="engine.cpp" />
-    <ClCompile Include="geometry.cpp" />
+    <ClCompile Include="Font.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="input.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="PlayerManager.cpp" />
+    <ClCompile Include="PlayerObject.cpp" />
+    <ClCompile Include="RenderCache.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="SceneObject.cpp" />
+    <ClCompile Include="Scripting.cpp" />
+    <ClCompile Include="SpawnerObject.cpp" />
+    <ClCompile Include="State.cpp" />
+    <ClCompile Include="ViewFrustum.cpp" />
+    <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="allocatehierarchy.h" />
-    <ClInclude Include="animation.h" />
-    <ClInclude Include="animinstance.h" />
+    <ClInclude Include="AnimatedObject.h" />
     <ClInclude Include="backends\imgui_impl_dx9.h" />
     <ClInclude Include="backends\imgui_impl_win32.h" />
-    <ClInclude Include="bounding_volume.h" />
+    <ClInclude Include="BoundingVolume.h" />
+    <ClInclude Include="Bullet.h" />
+    <ClInclude Include="camera.h" />
+    <ClInclude Include="CollisionDetection.h" />
     <ClInclude Include="engine.h" />
-    <ClInclude Include="geometry.h" />
+    <ClInclude Include="Font.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="Geometry.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_internal.h" />
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
-    <ClInclude Include="input.h" />
-    <ClInclude Include="linkedlist.h" />
+    <ClInclude Include="Input.h" />
+    <ClInclude Include="LinkedList.h" />
     <ClInclude Include="main.h" />
-    <ClInclude Include="material.h" />
-    <ClInclude Include="mesh.h" />
-    <ClInclude Include="render_cache.h" />
-    <ClInclude Include="resource_management.h" />
-    <ClInclude Include="scene_manager.h" />
-    <ClInclude Include="scene_object.h" />
-    <ClInclude Include="scripting.h" />
-    <ClInclude Include="spawner_object.h" />
-    <ClInclude Include="view_frustum.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="Menu.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="PlayerManager.h" />
+    <ClInclude Include="PlayerObject.h" />
+    <ClInclude Include="RenderCache.h" />
+    <ClInclude Include="ResourceManagement.h" />
+    <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="SceneObject.h" />
+    <ClInclude Include="Scripting.h" />
+    <ClInclude Include="SpawnerObject.h" />
+    <ClInclude Include="State.h" />
+    <ClInclude Include="ViewFrustum.h" />
+    <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="imgui\LICENSE.txt" />
