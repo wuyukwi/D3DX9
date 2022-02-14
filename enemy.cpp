@@ -22,7 +22,7 @@ Enemy::Enemy(D3DXVECTOR3 pos)
     // xファイル読み込み オブジェクト作成
     m_hit = 0;
 
-    m_enemy = new SceneObject(0, L"data\\enemy.x");
+    m_enemy = new SceneObject(0, "data\\enemy.x");
     m_bullet = new BulletManager();
 
     m_enemy->SetTranslation(pos);

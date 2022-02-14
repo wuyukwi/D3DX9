@@ -23,7 +23,7 @@ Player::Player()
     // xファイル読み込み オブジェクト作成
     m_hit = 0;
 
-    m_player = new SceneObject(0, L"data\\enemy.x");
+    m_player = new SceneObject(0, "data\\enemy.x");
     m_bullet = new BulletManager();
 
 

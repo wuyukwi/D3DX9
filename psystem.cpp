@@ -81,7 +81,7 @@ bool PSystem::init(IDirect3DDevice9* device, char* texFileName)
 	
 	if(FAILED(hr))
 	{
-		::MessageBox(0, L"CreateVertexBuffer() - FAILED", L"PSystem", 0);
+		::MessageBox(0, "CreateVertexBuffer() - FAILED", "PSystem", 0);
 		return false;
 	}
 
@@ -92,7 +92,7 @@ bool PSystem::init(IDirect3DDevice9* device, char* texFileName)
 
 	if(FAILED(hr))
 	{
-		::MessageBox(0, L"D3DXCreateTextureFromFile() - FAILED", L"PSystem", 0);
+		::MessageBox(0, "D3DXCreateTextureFromFile() - FAILED", "PSystem", 0);
 		return false;
 	}
 

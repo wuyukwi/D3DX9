@@ -71,7 +71,7 @@ Engine::Engine(EngineSetup *setup)
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);			// マウスカーソル
 	wcex.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);// クライアント領域の背景色
 	wcex.lpszMenuName = NULL;							// メニューバー
-	wcex.lpszClassName = L"WindowClass";				// ウインドウクラスの名前
+	wcex.lpszClassName = "WindowClass";				// ウインドウクラスの名前
 	wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 	RegisterClassEx(&wcex);
 
@@ -107,7 +107,7 @@ Engine::Engine(EngineSetup *setup)
 	D3DDISPLAYMODE d3ddm;				// ディスプレイモード
 	if (d3d->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &d3ddm))
 	{// 現在のディスプレイモードを取得
-		MessageBox(0, L"GetAdapterDisplayMode() - FAILED", 0, 0);
+		MessageBox(0, "GetAdapterDisplayMode() - FAILED", 0, 0);
 	}
 
 	d3dpp.BackBufferWidth = m_setup->screen_width;
@@ -256,7 +256,7 @@ Engine::~Engine()
 	ImGui::DestroyContext();
 
 	// Unregister the window class.
-	UnregisterClass(L"WindowClass", m_setup->instance);
+	UnregisterClass("WindowClass", m_setup->instance);
 
 	// Destroy the engine setup structure.
 	SAFE_DELETE(m_setup);

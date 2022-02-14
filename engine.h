@@ -63,8 +63,8 @@
 struct EngineSetup
 {
 	HINSTANCE	instance; 	    // Application instance handle.
-	wchar_t*		class_name;		// ウインドウスタイルの名前
-	wchar_t*		window_name;	// ウインドウの名前
+	char*		class_name;		// ウインドウスタイルの名前
+	char*		window_name;	// ウインドウの名前
 	unsigned char totalBackBuffers; // Number of back buffers to use.
 	float		  scale;            // Unit scale in meters/unit.
 	int			screen_width;	// ウインドウの幅
@@ -80,8 +80,8 @@ struct EngineSetup
 	{
 
 		instance = NULL;
-		class_name = L"Application";
-		window_name = L"Game";
+		class_name = "Application";
+		window_name = "Game";
 		totalBackBuffers = 1;
 		scale = 1.0f;
 		screen_width = 1280;

@@ -17,7 +17,7 @@ Skybox::Skybox(float skyboxSize,IDirect3DDevice9* device)
     m_device = device;
 
 	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(device,L"data\\tex\\skybox.jpg",&m_tex);
+	D3DXCreateTextureFromFile(device,"data\\tex\\skybox.jpg",&m_tex);
 
 	// 頂点バッファの生成
 	device->CreateVertexBuffer(
