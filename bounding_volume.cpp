@@ -21,7 +21,6 @@ bool BoundingBox::isPointInside(D3DXVECTOR3& p)
 		return false;
 	}
 }
-
 BoundingVolume::BoundingVolume()
 {
 	m_box = new BoundingBox;
@@ -30,12 +29,16 @@ BoundingVolume::BoundingVolume()
 	m_ellipsoidRadius = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
+
 BoundingVolume::~BoundingVolume()
 {
 	SAFE_DELETE(m_box);
 	SAFE_DELETE(m_sphere);
 }
 
+//-----------------------------------------------------------------------------
+// 指定されたメッシュを囲むバウンディングボリュームを構築します
+//-----------------------------------------------------------------------------
 void BoundingVolume::BoundingVolumeFromMesh(ID3DXMesh* mesh, D3DXVECTOR3 ellipsoidRadius)
 {
 	D3DXVECTOR3* vertices;
@@ -61,7 +64,7 @@ void BoundingVolume::BoundingVolumeFromMesh(ID3DXMesh* mesh, D3DXVECTOR3 ellipso
 }
 
 //-----------------------------------------------------------------------------
-// Builds a bounding volume to enclose the given vertices.
+// 指定された頂点を囲むバウンディングボリュームを構築します
 //-----------------------------------------------------------------------------
 void BoundingVolume::BoundingVolumeFromVertices(D3DXVECTOR3* vertices, unsigned long totalVertices, unsigned long vertexStride, D3DXVECTOR3 ellipsoidRadius)
 {
@@ -83,7 +86,7 @@ void BoundingVolume::BoundingVolumeFromVertices(D3DXVECTOR3* vertices, unsigned 
 }
 
 //-----------------------------------------------------------------------------
-// Builds a bounding volume from the given bounding volume details.
+// 指定されたバウンディングボリュームからバウンディングボリュームを構築します
 //-----------------------------------------------------------------------------
 void BoundingVolume::CloneBoundingVolume(BoundingBox* box, BoundingSphere* sphere, D3DXVECTOR3 ellipsoidRadius)
 {
@@ -103,7 +106,7 @@ void BoundingVolume::CloneBoundingVolume(BoundingBox* box, BoundingSphere* spher
 }
 
 //-----------------------------------------------------------------------------
-// Repositions the bounding volume by the given matrix.
+// 指定された行列によってバウンディングボリュームを再配置します。
 //-----------------------------------------------------------------------------
 void BoundingVolume::RepositionBoundingVolume(D3DXMATRIX* location)
 {
@@ -113,7 +116,7 @@ void BoundingVolume::RepositionBoundingVolume(D3DXMATRIX* location)
 }
 
 //-----------------------------------------------------------------------------
-// Sets the bounding box's properties.
+// バウンディングボックスのプロパティを設定します。
 //-----------------------------------------------------------------------------
 void BoundingVolume::SetBoundingBox(D3DXVECTOR3 min, D3DXVECTOR3 max)
 {
@@ -125,7 +128,7 @@ void BoundingVolume::SetBoundingBox(D3DXVECTOR3 min, D3DXVECTOR3 max)
 }
 
 //-----------------------------------------------------------------------------
-// Returns the bounding box.
+// バウンディングボックスを返します。
 //-----------------------------------------------------------------------------
 BoundingBox* BoundingVolume::GetBoundingBox()
 {
@@ -133,7 +136,7 @@ BoundingBox* BoundingVolume::GetBoundingBox()
 }
 
 //-----------------------------------------------------------------------------
-// Sets the bounding sphere's properties.
+// バウンディング球のプロパティを設定します。
 //-----------------------------------------------------------------------------
 void BoundingVolume::SetBoundingSphere(D3DXVECTOR3 centre, float radius, D3DXVECTOR3 ellipsoidRadius)
 {
@@ -144,7 +147,7 @@ void BoundingVolume::SetBoundingSphere(D3DXVECTOR3 centre, float radius, D3DXVEC
 }
 
 //-----------------------------------------------------------------------------
-// Returns the bounding sphere.
+// バウンディング球を返します。
 //-----------------------------------------------------------------------------
 BoundingSphere* BoundingVolume::GetBoundingSphere()
 {
@@ -152,16 +155,15 @@ BoundingSphere* BoundingVolume::GetBoundingSphere()
 }
 
 //-----------------------------------------------------------------------------
-// Sets the ellipsoid radius to a percentage of the sphere radius.
+// 楕円体の半径を球の半径のパーセンテージに設定します
 //-----------------------------------------------------------------------------
 void BoundingVolume::SetEllipsoidRadius(D3DXVECTOR3 ellipsoidRadius)
 {
 	m_ellipsoidRadius = D3DXVECTOR3(m_sphere->radius * ellipsoidRadius.x, m_sphere->radius * ellipsoidRadius.y, m_sphere->radius * ellipsoidRadius.z);
 }
 
-
 //-----------------------------------------------------------------------------
-// Returns the ellipsoid radius.
+// 楕円体の半径を返します。
 //-----------------------------------------------------------------------------
 D3DXVECTOR3 BoundingVolume::GetEllipsoidRadius()
 {

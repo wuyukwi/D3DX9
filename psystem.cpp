@@ -355,13 +355,13 @@ void Snow::update(float timeDelta)
 	{
 		i->_position += i->_velocity * timeDelta;
 
-		// is the point outside bounds?
-		if( _boundingBox.isPointInside( i->_position ) == false ) 
-		{
-			// nope so kill it, but we want to recycle dead 
-			// particles, so respawn it instead.
-			resetParticle( &(*i) );
-		}
+		//// is the point outside bounds?
+		//if( _boundingBox.isPointInside( i->_position ) == false ) 
+		//{
+		//	// nope so kill it, but we want to recycle dead 
+		//	// particles, so respawn it instead.
+		//	resetParticle( &(*i) );
+		//}
 	}
 }
 

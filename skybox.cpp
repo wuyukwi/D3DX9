@@ -9,122 +9,126 @@
 **********************************************************************************/ 
 #include "engine.h"
 
+struct SkyBoxVertex
+{
+	float x, y, z;  //定点位置
+	float u, v;		//纹理位置
+};
+#define D3DFVF_SKYBOX D3DFVF_XYZ | D3DFVF_TEX1
+
 //-----------------------------------------------------------------------------
 // The skybox class constructor.
 //-----------------------------------------------------------------------------
-Skybox::Skybox(float skyboxSize,IDirect3DDevice9* device)
+CSkyBox::CSkyBox(LPDIRECT3DDEVICE9 pDevice)
 {
-    m_device = device;
-
-	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(device,"data\\tex\\skybox.jpg",&m_tex);
-
-	// 頂点バッファの生成
-	device->CreateVertexBuffer(
-		sizeof(LVertex) * 24,
-		0,
-		L_VERTEX_FVF,
-		D3DPOOL_MANAGED,
-		&m_vb,
-		NULL);
-
-	LVertex Vtx[24];		// 頂点情報へのポインタ
-
-	float fxsize = 1.0f / 4;
-	float fysize = 1.0f / 3;
-
-	// 前
-	Vtx[0] = LVertex(-skyboxSize, -skyboxSize, skyboxSize, fxsize * 3, fysize * 2);
-	Vtx[1] = LVertex(-skyboxSize, skyboxSize, skyboxSize, fxsize * 3, fysize);
-	Vtx[2] = LVertex(skyboxSize, -skyboxSize, skyboxSize, fxsize * 4, fysize * 2);
-	Vtx[3] = LVertex(skyboxSize, skyboxSize, skyboxSize, fxsize * 4, fysize);
-
-	// 後ろ
-	Vtx[4] = LVertex(skyboxSize, -skyboxSize, -skyboxSize, fxsize, fysize * 2);
-	Vtx[5] = LVertex(skyboxSize, skyboxSize, -skyboxSize, fxsize, fysize);
-	Vtx[6] = LVertex(-skyboxSize, -skyboxSize, -skyboxSize, fxsize * 2, fysize * 2);
-	Vtx[7] = LVertex(-skyboxSize, skyboxSize, -skyboxSize, fxsize * 2, fysize);
-
-	// 左
-	Vtx[8] = LVertex(-skyboxSize, -skyboxSize, -skyboxSize, fxsize * 2, fysize * 2);
-	Vtx[9] = LVertex(-skyboxSize, skyboxSize, -skyboxSize, fxsize * 2, fysize);
-	Vtx[10] = LVertex(-skyboxSize, -skyboxSize, skyboxSize, fxsize * 3, fysize * 2);
-	Vtx[11] = LVertex(-skyboxSize, skyboxSize, skyboxSize, fxsize * 3, fysize);
-
-	// 右
-	Vtx[12] = LVertex(skyboxSize, -skyboxSize, skyboxSize, 0.0f, fysize * 2);
-	Vtx[13] = LVertex(skyboxSize, skyboxSize, skyboxSize, 0.0f, fysize);
-	Vtx[14] = LVertex(skyboxSize, -skyboxSize, -skyboxSize, fxsize, fysize * 2);
-	Vtx[15] = LVertex(skyboxSize, skyboxSize, -skyboxSize, fxsize, fysize);
-
-	// 上
-	Vtx[16] = LVertex(skyboxSize, skyboxSize, -skyboxSize, fxsize, fysize);
-	Vtx[17] = LVertex(skyboxSize, skyboxSize, skyboxSize, fxsize, 0.0f);
-	Vtx[18] = LVertex(-skyboxSize, skyboxSize, -skyboxSize, fxsize * 2, fysize);
-	Vtx[19] = LVertex(-skyboxSize, skyboxSize, skyboxSize, fxsize * 2, 0.0f);
-
-	// 下
-	Vtx[20] = LVertex(-skyboxSize, -skyboxSize, -skyboxSize, fxsize * 2, fysize * 2);
-	Vtx[21] = LVertex(-skyboxSize, -skyboxSize, skyboxSize, fxsize * 2, fysize * 3);
-	Vtx[22] = LVertex(skyboxSize, -skyboxSize, -skyboxSize, fxsize, fysize * 2);
-	Vtx[23] = LVertex(skyboxSize, -skyboxSize, skyboxSize, fxsize, fysize * 3);
-
-	// 頂点情報をロックし、頂点情報書き込み
-	VOID* pVertices;
-	m_vb->Lock(0, sizeof(Vtx), (void**)&pVertices, 0);
-	memcpy(pVertices, Vtx, sizeof(Vtx));
-
-	// 頂点バッファをアンロックする
-	m_vb->Unlock();
-
+	m_pDevice = pDevice;
+	m_pVertexBuffer = NULL;
+	for (int i = 0; i < 5; i++)
+		m_pTexture[i] = NULL;
+	m_fLength = 0.0f;
 }
 
 
-//-----------------------------------------------------------------------------
-// The skybox class destructor.
-//-----------------------------------------------------------------------------
-Skybox::~Skybox()
+CSkyBox::~CSkyBox(void)
 {
-	SAFE_RELEASE(m_tex);
-	SAFE_RELEASE(m_vb);
-}
-
-//-----------------------------------------------------------------------------
-// Skybox render
-//-----------------------------------------------------------------------------
-void Skybox::Render()
-{
-	D3DXMATRIX mtxRot, mtxTrans, mtxWorld;		// 計算用マトリックス
-
-	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&mtxWorld);
-
-	D3DXMatrixTranslation(&mtxTrans, 0.0f, 0.0f, 0.0f);
-	D3DXMatrixRotationY(&mtxRot, -0.000005f * timeGetTime());
-
-	mtxWorld = mtxRot * mtxTrans;
-
-	m_device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-	m_device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-
-	// ワールドマトリックスの設定
-	m_device->SetTransform(D3DTS_WORLD, &mtxWorld);
-
-	// 頂点バッファをデータストリームに設定
-	m_device->SetStreamSource(0, m_vb, 0, sizeof(L_VERTEX_FVF));
-
-	// 頂点フォーマットの設定
-	m_device->SetFVF(L_VERTEX_FVF);
-
-	// テクスチャの設定
-	m_device->SetTexture(0, m_tex);
-
-	for (int i = 0; i < 6; i++)
+	SAFE_RELEASE(m_pVertexBuffer);
+	for (int i = 0; i < 5; i++)
 	{
-		// ポリゴンの描画
-		m_device->DrawPrimitive(
-			D3DPT_TRIANGLESTRIP,		// プリミティブの種類
-			i * 4,							// 描画する最初の頂点インデックス
-			2);							// プリミティブ(ポリゴン)数
+		SAFE_RELEASE(m_pTexture[i]);
+	}
+}
+
+bool CSkyBox::InitSkyBox(float length)
+{
+	m_fLength = length;
+
+	//创建定点缓冲区
+	m_pDevice->CreateVertexBuffer(20 * sizeof(SkyBoxVertex), 0, D3DFVF_SKYBOX, D3DPOOL_MANAGED, &m_pVertexBuffer, 0);
+
+	float u = 1.0f / 4;
+	float v = 1.0f / 3;
+
+	SkyBoxVertex vertices[] =
+	{
+		//前面的顶点
+		{-m_fLength / 2, 0.0f, m_fLength / 2, 2*u, 2*v,},
+		{-m_fLength / 2, m_fLength / 2, m_fLength / 2, 2*u, v,},
+		{m_fLength / 2, 0.0f, m_fLength / 2, 3*u, 2*v,},
+		{m_fLength / 2, m_fLength / 2, m_fLength / 2, 3*u, v,},
+
+		//后面的顶点
+		{m_fLength / 2, 0.0f, -m_fLength / 2, 0.0f, 2*v,},
+		{m_fLength / 2, m_fLength / 2, -m_fLength / 2, 0.0f, v,},
+		{-m_fLength / 2, 0.0f, -m_fLength / 2, u, 2*v,},
+		{-m_fLength / 2, m_fLength / 2, -m_fLength / 2, u, v,},
+
+		//左面的顶点
+		{-m_fLength / 2, 0.0f, -m_fLength / 2 , u, 2 * v,},
+		{-m_fLength / 2, m_fLength / 2, -m_fLength / 2, u, v,},
+		{-m_fLength / 2, 0.0f, m_fLength / 2, 2*u, 2 * v,},
+		{-m_fLength / 2, m_fLength / 2, m_fLength / 2, 2*u, v,},
+
+		//右面的顶点
+		{m_fLength / 2, 0.0f, m_fLength / 2, 3*u, 2*v,},
+		{m_fLength / 2, m_fLength / 2, m_fLength / 2, 3 * u, v,},
+		{m_fLength / 2, 0.0f, -m_fLength / 2, 1.0f, 2*v},
+		{m_fLength / 2, m_fLength / 2, -m_fLength / 2, 1.0f, v,},
+
+		//上面的顶点
+		{m_fLength / 2, m_fLength / 2, -m_fLength / 2, u, 0.0f,},
+		{m_fLength / 2, m_fLength / 2, m_fLength / 2, 2*u,0.0f,},
+		{-m_fLength / 2, m_fLength / 2, -m_fLength / 2,  u, v,},
+		{-m_fLength / 2, m_fLength / 2, m_fLength / 2, 2*u, v,},
+
+	/*	{-m_fLength / 2, m_fLength / 2, m_fLength / 2, u, v,},
+		{m_fLength / 2, m_fLength / 2, -m_fLength / 2, 2 * u, 0.0f,},
+		{m_fLength / 2, m_fLength / 2, m_fLength / 2, 2 * u, v,},
+		{-m_fLength / 2, m_fLength / 2, -m_fLength / 2, u, 0.0f,},*/
+		
+	};
+	//填充定点缓冲数据
+	void* pVertices = NULL;
+	//加锁
+	m_pVertexBuffer->Lock(0, 0, (void**)&pVertices, 0);
+	//拷贝顶点数据到缓冲区中
+	memcpy(pVertices, vertices, sizeof(vertices));
+	//解锁
+	m_pVertexBuffer->Unlock();
+
+
+
+	return true;
+}
+
+bool CSkyBox::InitSkyBoxTexture(LPSTR szFrontTexture)
+{
+	//从文件中加载天空盒纹理
+	D3DXCreateTextureFromFile(m_pDevice, szFrontTexture, &m_pTexture[0]);//前
+	
+	return true;
+}
+
+void CSkyBox::RenderSkyBox(D3DXMATRIX* matWorld, bool bRenderFrame /* = false */)
+{
+	
+	
+
+	//纹理颜色混合的第一个参数用于输出
+	m_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+	//纹理颜色混合的第一个参数取纹理的颜色值
+	m_pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	//世界变换
+	m_pDevice->SetTransform(D3DTS_WORLD, matWorld);
+	//设置资源流
+	m_pDevice->SetStreamSource(0, m_pVertexBuffer, 0, sizeof(SkyBoxVertex));
+	//设置灵活顶点格式
+	m_pDevice->SetFVF(D3DFVF_SKYBOX);
+
+	m_pDevice->SetTexture(0, m_pTexture[0]);
+
+	//绘制
+	for (int i = 0; i < 5; i++)
+	{	
+		m_pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, i * 4, 2);
 	}
 }

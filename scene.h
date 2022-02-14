@@ -26,7 +26,7 @@ private:
 	D3DXVECTOR3 m_vPosGround;
 	//D3DXVECTOR3 m_posPlayer;
 	
-	Skybox* m_skybox;
+	CSkyBox* m_skybox;
 	Player* m_player;
 	Enemy* m_enemy;
 

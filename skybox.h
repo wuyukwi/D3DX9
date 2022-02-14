@@ -12,22 +12,25 @@
 #ifndef SKYBOX_H_
 #define SKYBOX_H_
 
-class Skybox
+class CSkyBox
 {
 private:
-    
-    IDirect3DDevice9* m_device;
-    LPDIRECT3DVERTEXBUFFER9 m_vb;
-    LPDIRECT3DTEXTURE9 m_tex;
-
-
-
+	LPDIRECT3DDEVICE9 m_pDevice;			//设备指针
+	LPDIRECT3DVERTEXBUFFER9 m_pVertexBuffer;//定点缓冲区指针
+	LPDIRECT3DTEXTURE9 m_pTexture[5];		//纹理对象指针
+	float m_fLength;						//天空盒宽度
 public:
-    Skybox(float skyboxSize, IDirect3DDevice9* device);
+	CSkyBox(LPDIRECT3DDEVICE9 pDevice);
+	virtual ~CSkyBox(void);
 
-    ~Skybox();
+	//初始化天空盒
+	bool InitSkyBox(float length);
 
-    void Render();
+	//加载纹理
+	bool InitSkyBoxTexture(LPSTR szFrontTexture);
+
+	//渲染天空盒
+	void RenderSkyBox(D3DXMATRIX* matWorld, bool bRenderFrame = false);
 };
 
 #endif // SKYBOX_H_

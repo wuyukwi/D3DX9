@@ -33,13 +33,15 @@ Scene::Scene(IDirect3DDevice9* device)
 
     m_buf->Unlock();
 
-    D3DXCreateTextureFromFileA(m_device, "data\\floor.jpg", &m_tex);
+    D3DXCreateTextureFromFileA(m_device, "data/grass.jpg", &m_tex);
 
 	// Create the player object
 	m_player = new Player();
    
 	// Create the skybox object
-	m_skybox = new Skybox(1000.0f, m_device);
+	m_skybox = new CSkyBox(m_device);
+	m_skybox->InitSkyBox(20000.0f);
+	m_skybox->InitSkyBoxTexture("data/tex/skybox.jpg");
 
 	m_enemy = new Enemy{ D3DXVECTOR3(100.0,0.0f,100.0f)};
 
@@ -125,14 +127,19 @@ void Scene::Update()
 
 void Scene::Render()
 {
-	//m_skybox->Render();
+	D3DXMATRIX wm;
+	D3DXMatrixIdentity(&wm);
 
-	////渲染地面
-	//m_device->SetTransform(D3DTS_WORLD, &m_matGround);
-	//m_device->SetTexture(0, m_tex);
-	//m_device->SetStreamSource(0, m_buf, 0, sizeof(CUSTOMVERTEX));
-	//m_device->SetFVF(D3DFVF_CUSTOMVERTEX);
-	//m_device->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+	D3DXMatrixTranslation(&wm, 0.0f, -2000.0f, 0.0f);
+
+	m_skybox->RenderSkyBox(&wm);
+
+	//渲染地面
+	m_device->SetTransform(D3DTS_WORLD, &m_matGround);
+	m_device->SetTexture(0, m_tex);
+	m_device->SetStreamSource(0, m_buf, 0, sizeof(CUSTOMVERTEX));
+	m_device->SetFVF(D3DFVF_CUSTOMVERTEX);
+	m_device->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 
 
 	// プレイヤーの描画

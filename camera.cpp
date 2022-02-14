@@ -14,10 +14,10 @@ Camera::Camera()
 	_cameraType = FREE;
 
 	D3DXMatrixIdentity(&_matView);
-	_pos = D3DXVECTOR3(10.0f, 1000.9f, -1350.2f);
+	_pos = D3DXVECTOR3(30.0f, 120.9f, -600.2f);
 	_right = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
-	_up = D3DXVECTOR3(0.0f, 0.8f, 0.6f);
-	_look = D3DXVECTOR3(0.0f, -0.6f, 0.8f);
+	_up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	_look = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 
 
 }
@@ -84,16 +84,16 @@ void Camera::Update()
 		this->fly(-40.0f * timeDelta);
 
 	if (::GetAsyncKeyState(VK_UP) & 0x8000f)
-		this->pitch(10.0f * timeDelta);
+		this->pitch(1.0f * timeDelta);
 
 	if (::GetAsyncKeyState(VK_DOWN) & 0x8000f)
-		this->pitch(-10.0f * timeDelta);
+		this->pitch(-1.0f * timeDelta);
 
 	if (::GetAsyncKeyState(VK_LEFT) & 0x8000f)
-		this->yaw(-10.0f * timeDelta);
+		this->yaw(-1.0f * timeDelta);
 
 	if (::GetAsyncKeyState(VK_RIGHT) & 0x8000f)
-		this->yaw(10.0f * timeDelta);
+		this->yaw(1.0f * timeDelta);
 
 	if (pInput->GetKeyPress(DIK_N, true))
 		this->roll(10.0f * timeDelta);
