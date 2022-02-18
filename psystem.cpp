@@ -332,12 +332,12 @@ void Snow::resetParticle(Attribute* attribute)
 	// get random x, z coordinate for the position of the snow flake.
 	GetRandomVector(
 		&attribute->_position,
-		&_boundingBox.min,
-		&_boundingBox.max);
+		&_boundingBox._min,
+		&_boundingBox._max);
 
 	// no randomness for height (y-coordinate).  Snow flake
 	// always starts at the top of bounding box.
-	attribute->_position.y = _boundingBox.max.y; 
+	attribute->_position.y = _boundingBox._max.y; 
 
 	// snow flakes fall downwards and slightly to the left
 	attribute->_velocity.x = GetRandomFloat(0.0f, 1.0f) * -3.0f;
@@ -355,13 +355,13 @@ void Snow::update(float timeDelta)
 	{
 		i->_position += i->_velocity * timeDelta;
 
-		//// is the point outside bounds?
-		//if( _boundingBox.isPointInside( i->_position ) == false ) 
-		//{
-		//	// nope so kill it, but we want to recycle dead 
-		//	// particles, so respawn it instead.
-		//	resetParticle( &(*i) );
-		//}
+		// is the point outside bounds?
+		if( _boundingBox.isPointInside( i->_position ) == false ) 
+		{
+			// nope so kill it, but we want to recycle dead 
+			// particles, so respawn it instead.
+			resetParticle( &(*i) );
+		}
 	}
 }
 
@@ -405,7 +405,7 @@ void Firework::resetParticle(Attribute* attribute)
 		GetRandomFloat(0.0f, 1.0f),
 		GetRandomFloat(0.0f, 1.0f),
 		GetRandomFloat(0.0f, 1.0f),
-		GetRandomFloat(0.0f, 1.0f));
+		(0.0f, 1.0f));
 
 	attribute->_age      = 0.0f;
 	attribute->_lifeTime = 2.0f; // lives for 2 seconds

@@ -26,15 +26,21 @@ private:
 	D3DXVECTOR3 m_vPosGround;
 	//D3DXVECTOR3 m_posPlayer;
 	
+	D3DXVECTOR3 vPickRayOrig, vPickRayDir;
+	BOOL m_hit;
+
+	LinkedList< SceneObject >* m_enemylist; // Linked list of dynamic objects.
+
 	CSkyBox* m_skybox;
-	Player* m_player;
-	Enemy* m_enemy;
+	//Player* m_player;
+	Camera* m_camera;
+	Bullet* m_bullet;
 
 public:
 	Scene(IDirect3DDevice9* device);
 	 ~Scene();
 
-	void Update();
+	void Update(const float& elapsed);
 	void Render();
 
 	bool RayIntersectScene(D3DXVECTOR3 rayPosition, D3DXVECTOR3 rayDirection, bool checkScene, SceneObject* thisObject, bool checkObjects);

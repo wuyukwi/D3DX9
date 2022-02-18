@@ -118,7 +118,7 @@ Engine::Engine(EngineSetup *setup)
 	d3dpp.MultiSampleQuality = 0;
 	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
 	d3dpp.hDeviceWindow = m_window;
-	d3dpp.Windowed = TRUE;
+	d3dpp.Windowed = FALSE;
 	d3dpp.EnableAutoDepthStencil = true;
 	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
 	d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
@@ -208,12 +208,12 @@ Engine::Engine(EngineSetup *setup)
 	m_input = new Input(m_window);
 
 	// Create the camera object
-	m_camera = new Camera();
+	//m_camera = new Camera();
 
 	// Create the PSystem object
 	// Create the Firework object
-	m_psystem = new psys::Firework(500);
-	m_psystem->init(m_device, "data\\tex\\flare.bmp");
+	/*m_psystem = new psys::Firework(500);
+	m_psystem->init(m_device, "data\\tex\\flare.bmp");*/
 
 
 	// Create the scene object.
@@ -240,7 +240,7 @@ Engine::~Engine()
 	{
 		// Destroy everything.
 		SAFE_DELETE(m_input);
-		SAFE_DELETE(m_psystem);
+		//SAFE_DELETE(m_psystem);
 		SAFE_DELETE(m_scene);
 
 		// Release the device.
@@ -305,6 +305,10 @@ void Engine::Run()
 				ImGui_ImplWin32_NewFrame();
 				ImGui::NewFrame();
 
+				// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+			/*	if (show_demo_window)
+					ImGui::ShowDemoWindow(&show_demo_window);*/
+
 #ifdef DEBUG
 
 				// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
@@ -319,7 +323,7 @@ void Engine::Run()
 					ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
 					ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-					//ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+					ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
 					ImGui::Checkbox("Camera Window", &show_camera_window);
 
 					//ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
@@ -355,7 +359,7 @@ void Engine::Run()
 				unsigned long currentTime = timeGetTime();
 				static unsigned long lastTime = currentTime;
 				float elapsed = (currentTime - lastTime) *0.001f;
-				m_timeDelta = elapsed;
+				
 				lastTime = currentTime;
 
 				// Calculate the frame rate.
@@ -363,6 +367,7 @@ void Engine::Run()
 				static int frameCount = 0;
 				frameTime += elapsed;
 				frameCount++;
+				m_time = frameCount;
 
 				//// Update the fps every half a second.
 				//if (frameTime > 1.0f)
@@ -372,29 +377,30 @@ void Engine::Run()
 				//	frameTime = 0.0f;
 				//	frameCount = 0;
 				//}
-			ImGui::Begin("Debug, window!");                         // Create a window called "Hello, world!" and append into it.
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 0.001f * ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-			ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+			//ImGui::Begin("Debug, window!");                         // Create a window called "Hello, world!" and append into it.
+			//ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 0.001f * ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			//ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+			//ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
 				// Update the input object, reading the keyboard and mouse.
 				m_input->Update();
 
 				// Check if the user wants to make a forced exit.
-				if (m_input->GetKeyPress(DIK_F1))
+				if (m_input->GetKeyPress(DIK_ESCAPE))
 					PostQuitMessage(0);
 
 
 				// Object update
 
-				m_psystem->update(elapsed);
+			/*	m_psystem->update(elapsed);
 				if (m_psystem->isDead())
-					m_psystem->reset();
+					m_psystem->reset();*/
 
-				m_camera->Update();
-				m_scene->Update();
+				//m_camera->Update();
+				m_scene->Update(elapsed);
 
 
 
-			ImGui::End();
+			//ImGui::End();
 
 				// Begin the scene.
 				ImGui::EndFrame();
@@ -410,9 +416,10 @@ void Engine::Run()
 				{
 					// Object render
 
-					//m_psystem->render();
+					
 					m_scene->Render();
-
+				
+					//m_psystem->render();
 				
 					ImGui::Render();
 					ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
@@ -456,9 +463,9 @@ float Engine::GetScale()
 //-----------------------------------------------------------------------------
 // Returns the timeDelta
 //-----------------------------------------------------------------------------
-float Engine::GettimeDelta()
+int Engine::GetTime()
 {
-	return m_timeDelta;
+	return m_time;
 }
 //-----------------------------------------------------------------------------
 // Returns a pointer to the Direct3D device.
@@ -495,7 +502,7 @@ Scene* Engine::GetScene()
 //-----------------------------------------------------------------------------
 // Returns a pointer to the camera object.
 //-----------------------------------------------------------------------------
-Camera* Engine::GetCamera()
-{
-	return m_camera;
-}
+//Camera* Engine::GetCamera()
+//{
+//	return m_camera;
+//}

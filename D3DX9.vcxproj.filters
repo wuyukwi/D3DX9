@@ -84,9 +84,6 @@
     <ClCompile Include="psystem.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="bounding_volume.cpp">
-      <Filter>Engine\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="bullet.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
@@ -159,9 +156,6 @@
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="bullet.h">
-      <Filter>Engine\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="bounding_volume.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sceneobject.h">

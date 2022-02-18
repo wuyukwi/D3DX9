@@ -15,24 +15,20 @@
 class Enemy
 {
 public:
-	Enemy(D3DXVECTOR3 pos);
+	Enemy();
 	~Enemy();
 
-	void Update();
+	void Update(const float& elapsed);
 	void Render();
+	void AddEnemy(D3DXVECTOR3 pos,char* name);
 
 	SceneObject* GetSceneObject();
 private:
+	LinkedList< SceneObject >* m_enemylist;
+
 	SceneObject* m_enemy;
-	BulletManager* m_bullet;
+	//BulletManager* m_bullet;
 
-	LPD3DXMESH                 g_pPickMesh;        //用于计算拾取三角形的网格对象
-	LPDIRECT3DVERTEXBUFFER9    m_vb;              //存放所拾取到的三角形的顶点缓冲区
-	BOOL m_hit;
-
-	float o[3] = { 0.0f,0.0f,0.0f };
-	float d[3] = { 0.0f,0.0f,0.0f };
-	D3DXVECTOR3 vPickRayOrig, vPickRayDir;
 };
 
 

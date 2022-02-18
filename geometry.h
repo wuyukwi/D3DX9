@@ -19,12 +19,14 @@ struct Vertex
 {
 	D3DXVECTOR3 translation; // Translation of the vertex (in world space).
 	D3DXVECTOR3 normal;	 // Vertex's normal vector.
+	D3DCOLOR	col;	//頂点カラー
 	D3DXVECTOR2	uv;		 // Texture UV coordinates.
 
 	Vertex()
 	{
 		translation = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-		normal = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		normal = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+		col= D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 		uv = D3DXVECTOR2(0.0f, 0.0f);
 	}
 
@@ -32,6 +34,7 @@ struct Vertex
 	{
 		this->translation = pos;
 		this->normal = nor;
+		this->col= D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 		this->uv = uv;
 	}
 
@@ -41,10 +44,11 @@ struct Vertex
 	{
 		this->translation = D3DXVECTOR3(x, y, z);
 		this->normal = D3DXVECTOR3(nx, ny, nz);
+		this->col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 		this->uv = D3DXVECTOR2(u, v);
 	}
 };
-#define VERTEX_FVF ( D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1 )
+#define VERTEX_FVF ( D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1 )
 #define VERTEX_FVF_SIZE D3DXGetFVFVertexSize( VERTEX_FVF )
 
 //-----------------------------------------------------------------------------
@@ -166,6 +170,46 @@ const D3DMATERIAL9 RED_MTRL = InitMtrl(RED, RED, RED, BLACK, 2.0f);
 const D3DMATERIAL9 GREEN_MTRL = InitMtrl(GREEN, GREEN, GREEN, BLACK, 2.0f);
 const D3DMATERIAL9 BLUE_MTRL = InitMtrl(BLUE, BLUE, BLUE, BLACK, 2.0f);
 const D3DMATERIAL9 YELLOW_MTRL = InitMtrl(YELLOW, YELLOW, YELLOW, BLACK, 2.0f);
+
+struct BoundingBox
+{
+	BoundingBox()
+	{
+		// infinite small 
+		_min.x = FLT_MAX;
+		_min.y = FLT_MAX;
+		_min.z = FLT_MAX;
+
+		_max.x = FLT_MIN;
+		_max.y = FLT_MIN;
+		_max.z = FLT_MIN;
+	}
+
+	inline bool isPointInside(D3DXVECTOR3& p)
+	{
+		if (p.x >= _min.x && p.y >= _min.y && p.z >= _min.z &&
+			p.x <= _max.x && p.y <= _max.y && p.z <= _max.z)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	D3DXVECTOR3 _min;
+	D3DXVECTOR3 _max;
+};
+
+struct BoundingSphere
+{
+	BoundingSphere() { _radius = 0.0f; }
+
+	D3DXVECTOR3 _center;
+	float		_radius;
+};
+
 
 
 #endif //GEOMETRY_H

@@ -21,7 +21,7 @@ public:
 	Camera(CameraType cameraType);
 	~Camera();
 	
-	void Update();
+	void Update(const float& elapsed);
 	void strafe(float units); // left/right
 	void fly(float units);    // up/down
 	void walk(float units);   // forward/backward
@@ -30,13 +30,15 @@ public:
 	void yaw(float angle);   // rotate on up vector
 	void roll(float angle);  // rotate on look vector
 
-	void getViewMatrix(D3DXMATRIXA16* V);
+	void getViewMatrix(D3DXMATRIX* V);
 	void setCameraType(CameraType cameraType);
 	
 	D3DXVECTOR3* getPosition();
 	D3DXVECTOR3* getRight();
 	D3DXVECTOR3* getUp();
 	D3DXVECTOR3* getLook();
+
+	D3DXMATRIX* GetViewMatrix();
 
 private:
 	D3DXMATRIXA16 _matView;

@@ -11,34 +11,34 @@
 #include "engine.h"
 
 //-----------------------------------------------------------------------------
-// The input class constructor.
+// Input クラスコンストラクター。
 //-----------------------------------------------------------------------------
 Input::Input(HWND window)
 {
-	// Store the handle to the parent window.
+	// 親ウィンドウへのハンドルを保存します。
 	m_window = window;
 
-	// Create a DirectInput interface.
+	// DirectInputインターフェースを作成します。
 	DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_di, NULL);
 
-	// Create, prepare, and aquire the keyboard device.
+	// キーボードデバイスを作成、準備、および取得します。
 	m_di->CreateDevice(GUID_SysKeyboard, &m_keyboard, NULL);
 	m_keyboard->SetDataFormat(&c_dfDIKeyboard);
 	m_keyboard->SetCooperativeLevel(m_window, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 	m_keyboard->Acquire();
 
-	// Create, prepare, and aquire the mouse device.
+	// マウスデバイスを作成、準備、および取得します。
 	m_di->CreateDevice(GUID_SysMouse, &m_mouse, NULL);
 	m_mouse->SetDataFormat(&c_dfDIMouse);
 	m_mouse->SetCooperativeLevel(m_window, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 	m_mouse->Acquire();
 
-	// Start the press stamp.
+	// プレススタンプ初期化
 	m_pressStamp = 0;
 }
 
 //-----------------------------------------------------------------------------
-// The input class destructor.
+// Input クラス デストラクタ。
 //-----------------------------------------------------------------------------
 Input::~Input()
 {
@@ -48,13 +48,13 @@ Input::~Input()
 }
 
 //-----------------------------------------------------------------------------
-// Updates the state of both the keyboard and mouse device.
+// キーボードとマウスデバイスの状態を更新します。
 //-----------------------------------------------------------------------------
 void Input::Update()
 {
 	static HRESULT result;
 
-	// Poll the keyboard until it succeeds or returns an unknown error.
+	// 成功するか、不明なエラーが返されるまで、キーボードをポーリングします。
 	while (true)
 	{
 		m_keyboard->Poll();
@@ -63,12 +63,12 @@ void Input::Update()
 		if (result != DIERR_INPUTLOST && result != DIERR_NOTACQUIRED)
 			return;
 
-		// Reacquire the device if the focus was lost.
+		// フォーカスが失われた場合は、デバイスを再取得します。
 		if (FAILED(m_keyboard->Acquire()))
 			return;
 	}
 
-	// Poll the mouse until it succeeds or returns an unknown error.
+	// 成功するか、不明なエラーが返されるまで、マウスをポーリングします。
 	while (true)
 	{
 		m_mouse->Poll();
@@ -77,22 +77,22 @@ void Input::Update()
 		if (result != DIERR_INPUTLOST && result != DIERR_NOTACQUIRED)
 			return;
 
-		// Reacquire the device if the focus was lost.
+		// フォーカスが失われた場合は、デバイスを再取得します。
 		if (FAILED(m_mouse->Acquire()))
 			return;
 	}
 
-	// Get the relative position of the mouse.
+	// マウスの相対位置を取得します。
 	GetCursorPos(&m_position);
 	ScreenToClient(m_window, &m_position);
 
-	// Increment the press stamp.
+	// プレススタンプ増加
 	m_pressStamp++;
 }
 
 //-----------------------------------------------------------------------------
-// Returns true if the given key is pressed.
-// Note: Consistent presses will return false when using the press stamp.
+// 指定されたキーが押された場合にtrueを返します。
+// プレススタンプを使用すると、長押しはfalseを返します。
 //-----------------------------------------------------------------------------
 bool Input::GetKeyPress(char key, bool ignorePressStamp)
 {
@@ -111,8 +111,8 @@ bool Input::GetKeyPress(char key, bool ignorePressStamp)
 }
 
 //-----------------------------------------------------------------------------
-// Returns true if the given button is pressed.
-// Note: Consistent presses will return false when using the press stamp.
+// 指定されたキーが押された場合にtrueを返します。
+// プレススタンプを使用すると、長押しはfalseを返します。
 //-----------------------------------------------------------------------------
 bool Input::GetButtonPress(char button, bool ignorePressStamp)
 {
@@ -131,7 +131,16 @@ bool Input::GetButtonPress(char button, bool ignorePressStamp)
 }
 
 //-----------------------------------------------------------------------------
-// Returns the x position of the mouse.
+// マウスの座標を返します。
+//-----------------------------------------------------------------------------
+POINT* Input::GetMousePos()
+{
+	return &m_position;
+}
+
+
+//-----------------------------------------------------------------------------
+// マウスのx座標を返します。
 //-----------------------------------------------------------------------------
 long Input::GetPosX()
 {
@@ -139,7 +148,7 @@ long Input::GetPosX()
 }
 
 //-----------------------------------------------------------------------------
-// Returns the y position of the mouse.
+// マウスのy座標を返します。
 //-----------------------------------------------------------------------------
 long Input::GetPosY()
 {
@@ -147,7 +156,7 @@ long Input::GetPosY()
 }
 
 //-----------------------------------------------------------------------------
-// Returns the change in the mouse's x coordinate.
+// マウスのx座標の変化を返します。
 //-----------------------------------------------------------------------------
 long Input::GetDeltaX()
 {
@@ -155,7 +164,7 @@ long Input::GetDeltaX()
 }
 
 //-----------------------------------------------------------------------------
-// Returns the change in the mouse's y coordinate.
+// マウスのy座標の変化を返します。
 //-----------------------------------------------------------------------------
 long Input::GetDeltaY()
 {
@@ -163,9 +172,10 @@ long Input::GetDeltaY()
 }
 
 //-----------------------------------------------------------------------------
-// Returns the change in the mouse's scroll wheel.
+// マウスのスクロールホイールの変化を返します。
 //-----------------------------------------------------------------------------
 long Input::GetDeltaWheel()
 {
 	return m_mouseState.lZ;
 }
+

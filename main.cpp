@@ -19,8 +19,8 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prev, LPSTR cmdLine, int cmdSho
 	setup.class_name = "windowClass";
 	setup.window_name = "Game";
 	setup.scale = 10.0f;
-	setup.screen_width = 1280;
-	setup.screen_height = 720;
+	setup.screen_width = 1920;
+	setup.screen_height = 1080;
 	
 
 	// Create the engine (using the setup structure), then run it.

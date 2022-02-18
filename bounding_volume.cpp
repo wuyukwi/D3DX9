@@ -9,18 +9,18 @@
 **********************************************************************************/
 #include "engine.h"
 
-bool BoundingBox::isPointInside(D3DXVECTOR3& p)
-{
-	if (p.x >= min.x && p.y >= min.y && p.z >= min.z &&
-		p.x <= max.x && p.y <= max.y && p.z <= max.z)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
+//bool BoundingBox::isPointInside(D3DXVECTOR3& p)
+//{
+//	if (p.x >= min.x && p.y >= min.y && p.z >= min.z &&
+//		p.x <= max.x && p.y <= max.y && p.z <= max.z)
+//	{
+//		return true;
+//	}
+//	else
+//	{
+//		return false;
+//	}
+//}
 BoundingVolume::BoundingVolume()
 {
 	m_box = new BoundingBox;

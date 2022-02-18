@@ -13,7 +13,7 @@
 
 
 //-----------------------------------------------------------------------------
-// Linked List Class
+// リンクリストクラス
 //-----------------------------------------------------------------------------
 template<class T>
 class LinkedList
@@ -21,9 +21,9 @@ class LinkedList
 public:
 	struct Element
 	{
-		T* data; // Pointer to the data held in the element.
-		Element* next; // Pointer to the next element in the list.
-		Element* prev; // Pointer to the previous element in the list.
+		T* data; // エレメントに保持されているデータへのポインタ。
+		Element* next; // リスト内の次のエレメントへのポインター。
+		Element* prev; // リスト内の前のエレメントへのポインター。
 
 		Element(T* element)
 		{
@@ -42,12 +42,11 @@ public:
 	};
 
 private:
-	Element* m_first;	 	// First element in the linked list.
-	Element* m_last;	 	// Last element in the linked list.
-	Element* m_iterate; 	// Used for iterating the linked list.
-	Element* m_temp;	 	// Used for temporary storage in various operations.
-	unsigned long m_totalElements;  // Total number of elements in the linked list.
-
+	Element* m_first;	 	// リンクリストの最初の要素。
+	Element* m_last;	 	// リンクリストの最後の要素。
+	Element* m_iterate; 	// リンクリストの繰り返し用
+	Element* m_temp;	 	// データを一時的に保存するために使用されます。
+	unsigned long m_totalElements;  // リンクリスト内の要素の個数。
 public:
 	LinkedList();
 	~LinkedList();

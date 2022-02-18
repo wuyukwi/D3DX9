@@ -154,7 +154,6 @@
     <ClCompile Include="animinstance.cpp" />
     <ClCompile Include="backends\imgui_impl_dx9.cpp" />
     <ClCompile Include="backends\imgui_impl_win32.cpp" />
-    <ClCompile Include="bounding_volume.cpp" />
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="enemy.cpp" />
@@ -178,7 +177,6 @@
     <ClInclude Include="animinstance.h" />
     <ClInclude Include="backends\imgui_impl_dx9.h" />
     <ClInclude Include="backends\imgui_impl_win32.h" />
-    <ClInclude Include="bounding_volume.h" />
     <ClInclude Include="bullet.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="enemy.h" />

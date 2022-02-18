@@ -12,21 +12,6 @@
 #ifndef BOUNDING_VOLUME_H
 #define BOUNDING_VOLUME_H
 
-struct BoundingBox
-{
-	bool isPointInside(D3DXVECTOR3& p);
-
-	D3DXVECTOR3 min;
-	D3DXVECTOR3 max;
-	float       halfSize;
-};
-
-
-struct BoundingSphere
-{
-	D3DXVECTOR3 centre;
-	float	    radius;
-};
 
 
 class BoundingVolume

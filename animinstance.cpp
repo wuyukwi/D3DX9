@@ -11,6 +11,7 @@
 
 CAnimInstance::CAnimInstance(void)
 {
+	
 }
 
 
@@ -57,10 +58,7 @@ void CAnimInstance::UpdataMatrix(const LPD3DXMATRIX matrix)
 	m_MatWorld *= *matrix;
 }
 
-LPD3DXMESH CAnimInstance::GetOrigMesh()
-{
-	return m_pAnimMesh->GetOrigMesh();
-}
+
 
 int CAnimInstance::GetAnimationNum() const
 {

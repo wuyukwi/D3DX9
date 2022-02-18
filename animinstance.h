@@ -51,7 +51,7 @@ public:
 	void UpdataMatrix(const LPD3DXMATRIX matrix);
 	
 	// メッシュ情報の取得
-	LPD3DXMESH GetOrigMesh();
+	LPD3DXMESH GetOrigMesh()const { return m_pAnimMesh->GetOrigMesh(); }
 
 	// ボーンのアニメーション個数獲得
 	int GetAnimationNum() const;

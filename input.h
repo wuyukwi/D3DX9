@@ -31,19 +31,22 @@ public:
 	long GetDeltaY();
 	long GetDeltaWheel();
 
+	POINT* GetMousePos();
+
 private:
-	HWND	       m_window;		   // Handle of the parent window.
-	IDirectInput8* m_di;				// DirectInput object.
-	unsigned long  m_pressStamp; 		   // Current press stamp (incremented every frame).
+	HWND	       m_window;		   // 親ウィンドウのハンドル。
+	IDirectInput8* m_di;			   // DirectInputオブジェクト。
+	unsigned long  m_pressStamp; 		   // 現在のプレススタンプ（フレームごとにインクリメント）。
 
-	IDirectInputDevice8* m_keyboard;	   // DirectInput keyboard device.
-	char		     m_keyState[256];	   // Stores the state of the keyboard keys.
-	unsigned long	     m_keyPressStamp[256]; // Stamps the last frame each key was preseed.
+	IDirectInputDevice8* m_keyboard;	   // DirectInputキーボードデバイス。
+	char		     m_keyState[256];	   // キーボードキーの状態を保存用。
+	unsigned long	     m_keyPressStamp[256]; // 各キーが事前にシードされた最後のフレームにスタンプを付けます。
 
-	IDirectInputDevice8* m_mouse;		    // DirectInput mouse device.
-	DIMOUSESTATE	     m_mouseState;	    // Stores the state of the mouse buttons.
-	unsigned long	     m_buttonPressStamp[3]; // Stamps the last frame each button was preseed.
-	POINT		     m_position;	    // Stores the position of the mouse cursor on the screen.
+	IDirectInputDevice8* m_mouse;		    // DirectInputマウスデバイス。
+	DIMOUSESTATE	     m_mouseState;	    // マウスボタンの状態を保存します。
+	unsigned long	     m_buttonPressStamp[3]; // 各ボタンがプレシードされた最後のフレームにスタンプを押します。
+	POINT		     m_position;	    // 画面上のマウスの位置を保存用。
 };
+
 
 #endif // INPUT_H_

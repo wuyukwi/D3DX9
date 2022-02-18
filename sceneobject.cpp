@@ -10,7 +10,49 @@
 
 #include "engine.h"
 
-#include "Engine.h"
+bool ComputeBoundingSphere(ID3DXMesh* mesh, BoundingSphere* sphere)
+{
+	HRESULT hr = 0;
+
+	BYTE* v = 0;
+	mesh->LockVertexBuffer(0, (void**)&v);
+
+	hr = D3DXComputeBoundingSphere(
+		(D3DXVECTOR3*)v,
+		mesh->GetNumVertices(),
+		D3DXGetFVFVertexSize(mesh->GetFVF()),
+		&sphere->_center,
+		&sphere->_radius);
+
+	mesh->UnlockVertexBuffer();
+
+	if (FAILED(hr))
+		return false;
+
+	return true;
+}
+
+bool ComputeBoundingBox(ID3DXMesh* mesh, BoundingBox* box)
+{
+	HRESULT hr = 0;
+
+	BYTE* v = 0;
+	mesh->LockVertexBuffer(0, (void**)&v);
+
+	hr = D3DXComputeBoundingBox(
+		(D3DXVECTOR3*)v,
+		mesh->GetNumVertices(),
+		D3DXGetFVFVertexSize(mesh->GetFVF()),
+		&box->_min,
+		&box->_max);
+
+	mesh->UnlockVertexBuffer();
+
+	if (FAILED(hr))
+		return false;
+
+	return true;
+}
 
 //-----------------------------------------------------------------------------
 // The scene object class constructor.
@@ -27,6 +69,7 @@ SceneObject::SceneObject(unsigned long type,LPCTSTR meshPath)
 	// The object is visible, enabled, solid, and registering collisons by default.
 	m_visible = true;
 	m_enabled = true;
+	m_hit = false;
 
 	// Initially the object is not touching the ground.
 	m_touchingGround = false;
@@ -34,8 +77,11 @@ SceneObject::SceneObject(unsigned long type,LPCTSTR meshPath)
 	// Clear the collision stamp.
 	m_collisionStamp = -1;
 
+	m_hp = 100;
+
 	// Set the object's mesh.
 	SetMesh(meshPath);
+
 }
 
 //-----------------------------------------------------------------------------
@@ -43,7 +89,10 @@ SceneObject::SceneObject(unsigned long type,LPCTSTR meshPath)
 //-----------------------------------------------------------------------------
 SceneObject::~SceneObject()
 {
+	//SAFE_DELETE(m_animation)
 	SAFE_DELETE(m_animInstance);
+	//SAFE_DELETE(m_BoxMesh);
+	//SAFE_DELETE(m_SphereMesh);
 }
 
 //-----------------------------------------------------------------------------
@@ -58,10 +107,10 @@ void SceneObject::Update()
 	m_animInstance->SetMatrix(&m_worldMatrix);
 	m_animInstance->Update(m_animspeed);
 
-	// Update the object's bounding volume using the translation matrix only.
-	// This will maintain an axis aligned bounding box around the object in
-	// world space rather than the object's local space.
-	RepositionBoundingVolume(&m_translationMatrix);
+	//// Update the object's bounding volume using the translation matrix only.
+	//// This will maintain an axis aligned bounding box around the object in
+	//// world space rather than the object's local space.
+	//RepositionBoundingVolume(&m_translationMatrix);
 }
 
 //-----------------------------------------------------------------------------
@@ -70,12 +119,31 @@ void SceneObject::Update()
 void SceneObject::Render()
 {
 
-	Engine::GetInstance()->GetDevice()->SetTransform(D3DTS_WORLD, &m_worldMatrix);
+	//Engine::GetInstance()->GetDevice()->SetTransform(D3DTS_WORLD, &m_worldMatrix);
 
 	// Render the object's mesh.
 	m_animInstance->Render();
 
-	Engine::GetInstance()->GetDevice()->SetRenderState(D3DRS_LIGHTING, true);
+	//D3DMATERIAL9 blue = BLUE_MTRL;
+	//blue.Diffuse.a = 0.10f;
+
+	//Engine::GetInstance()->GetDevice()->SetMaterial(&blue);
+	//Engine::GetInstance()->GetDevice()->SetTexture(0, 0);
+
+	//Engine::GetInstance()->GetDevice()->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+	//Engine::GetInstance()->GetDevice()->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	//Engine::GetInstance()->GetDevice()->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
+	//
+	//m_BoxMesh->DrawSubset(0);
+	//
+	//
+	//m_SphereMesh->DrawSubset(0);
+	//
+
+	//Engine::GetInstance()->GetDevice()->SetRenderState(D3DRS_ALPHABLENDENABLE, false);
+
+	//Engine::GetInstance()->GetDevice()->SetRenderState(D3DRS_LIGHTING, true);
 }
 
 //-----------------------------------------------------------------------------
@@ -237,6 +305,13 @@ D3DXMATRIX* SceneObject::GetWorldMatrix()
 	return &m_worldMatrix;
 }
 
+//-----------------------------------------------------------------------------
+// Returns a pointer to the object's current view matrix.
+//-----------------------------------------------------------------------------
+D3DXMATRIX* SceneObject::GetViewMatrix()
+{
+	return &m_viewMatrix;
+}
 
 //-----------------------------------------------------------------------------
 // Sets the object's type.
@@ -312,6 +387,24 @@ bool SceneObject::GetEnabled()
 }
 
 //-----------------------------------------------------------------------------
+// Returns the object's enabled flag.
+//-----------------------------------------------------------------------------
+BOOL* SceneObject::SetHit()
+{
+	return &m_hit;
+}
+
+void SceneObject::SetHp(int damege)
+{
+	m_hp += damege;
+
+}
+int SceneObject::GetHp()
+{
+	return m_hp;
+}
+
+//-----------------------------------------------------------------------------
 // Sets the mesh for this scene object.
 //-----------------------------------------------------------------------------
 void SceneObject::SetMesh(LPCTSTR meshPath)
@@ -326,6 +419,25 @@ void SceneObject::SetMesh(LPCTSTR meshPath)
 
 	Engine::GetInstance()->GetDevice()->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SUBTRACT);
 	Engine::GetInstance()->GetDevice()->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+
+	ComputeBoundingSphere(m_animation->GetOrigMesh(), &m_boundingSphere);
+	ComputeBoundingBox(m_animation->GetOrigMesh(), &m_boundingBox);
+
+	D3DXCreateSphere(
+		Engine::GetInstance()->GetDevice(),
+		m_boundingSphere._radius,
+		20,
+		20,
+		&m_SphereMesh,
+		0);
+
+	D3DXCreateBox(
+		Engine::GetInstance()->GetDevice(),
+		m_boundingBox._max.x - m_boundingBox._min.x,
+		m_boundingBox._max.y - m_boundingBox._min.y,
+		m_boundingBox._max.z - m_boundingBox._min.z,
+		&m_BoxMesh,
+		0);
 }
 
 //-----------------------------------------------------------------------------
@@ -334,4 +446,20 @@ void SceneObject::SetMesh(LPCTSTR meshPath)
 CAnimInstance* SceneObject::GetMesh()
 {
 	return m_animInstance;
+}
+
+//-----------------------------------------------------------------------------
+// Returns a pointer to the box  mesh.
+//-----------------------------------------------------------------------------
+LPD3DXMESH SceneObject::GetBoxMesh()
+{
+	return m_BoxMesh;
+}
+
+//-----------------------------------------------------------------------------
+// Returns a pointer to the spere mesh.
+//-----------------------------------------------------------------------------
+LPD3DXMESH SceneObject::GetSpereMesh()
+{
+	return m_SphereMesh;
 }

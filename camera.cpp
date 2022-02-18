@@ -11,7 +11,7 @@
 
 Camera::Camera()
 {
-	_cameraType = FREE;
+	_cameraType = FOLLOW;
 
 	D3DXMatrixIdentity(&_matView);
 	_pos = D3DXVECTOR3(30.0f, 120.9f, -600.2f);
@@ -57,59 +57,63 @@ D3DXVECTOR3* Camera::getLook()
 	return &this->_look;
 }
 
-void Camera::Update()
+void Camera::Update(const float& elapsed)
 {
 	Input* pInput = Engine::GetInstance()->GetInput();
-	float timeDelta = Engine::GetInstance()->GettimeDelta();
+	
 
 	
 	this->walk(pInput->GetDeltaWheel() * 0.5f);
 
-	if (pInput->GetKeyPress(DIK_I, true))		
-		this->walk(40.0f * timeDelta);
+	if (pInput->GetKeyPress(DIK_W, true))		
+		this->walk(100.0f * elapsed);
 
-	if (pInput->GetKeyPress(DIK_K, true))
-		this->walk(-40.0f * timeDelta);
+	if (pInput->GetKeyPress(DIK_S, true))
+		this->walk(-100.0f * elapsed);
 
-	if (pInput->GetKeyPress(DIK_J, true))
-		this->strafe(-40.0f * timeDelta);
+	if (pInput->GetKeyPress(DIK_A, true))
+		this->strafe(-100.0f * elapsed);
 
-	if (pInput->GetKeyPress(DIK_L, true))
-		this->strafe(40.0f * timeDelta);
+	if (pInput->GetKeyPress(DIK_D, true))
+		this->strafe(100.0f * elapsed);
+
+	this->pitch(pInput->GetDeltaY() * elapsed * 0.15f);
+	this->yaw(pInput->GetDeltaX() * elapsed * 0.15f);
 
 	if (pInput->GetKeyPress(DIK_R, true))
-		this->fly(40.0f * timeDelta);
+		this->fly(40.0f * elapsed);
 
 	if (pInput->GetKeyPress(DIK_F, true))
-		this->fly(-40.0f * timeDelta);
+		this->fly(-40.0f * elapsed);
 
 	if (::GetAsyncKeyState(VK_UP) & 0x8000f)
-		this->pitch(1.0f * timeDelta);
+		this->pitch(1.0f * elapsed);
+
 
 	if (::GetAsyncKeyState(VK_DOWN) & 0x8000f)
-		this->pitch(-1.0f * timeDelta);
+		this->pitch(-1.0f * elapsed);
 
 	if (::GetAsyncKeyState(VK_LEFT) & 0x8000f)
-		this->yaw(-1.0f * timeDelta);
+		this->yaw(-1.0f * elapsed);
 
 	if (::GetAsyncKeyState(VK_RIGHT) & 0x8000f)
-		this->yaw(1.0f * timeDelta);
+		this->yaw(1.0f * elapsed);
 
 	if (pInput->GetKeyPress(DIK_N, true))
-		this->roll(10.0f * timeDelta);
+		this->roll(10.0f * elapsed);
 
 	if (pInput->GetKeyPress(DIK_M, true))
-		this->roll(-10.0f * timeDelta);
+		this->roll(-10.0f * elapsed);
 
 	this->getViewMatrix(&_matView);
 	Engine::GetInstance()->GetDevice()->SetTransform(D3DTS_VIEW, &_matView);
 
-	static bool show_camera_window;
+	/*static bool show_camera_window;
 
 	ImGui::Checkbox("Camera window", &show_camera_window);
 
 	if(show_camera_window)
-	imguiUpdate(&show_camera_window);
+	imguiUpdate(&show_camera_window);*/
 }
 
 void Camera::imguiUpdate(bool* p_open)
@@ -241,7 +245,7 @@ void Camera::roll(float angle)
 	}
 }
 
-void Camera::getViewMatrix(D3DXMATRIXA16* V)
+void Camera::getViewMatrix(D3DXMATRIX* V)
 {
 	// Keep camera's axes orthogonal to eachother
 	D3DXVec3Normalize(&_look, &_look);
@@ -266,4 +270,9 @@ void Camera::getViewMatrix(D3DXMATRIXA16* V)
 void Camera::setCameraType(CameraType cameraType)
 {
 	_cameraType = cameraType;
+}
+
+D3DXMATRIX* Camera::GetViewMatrix()
+{
+	return &_matView;
 }

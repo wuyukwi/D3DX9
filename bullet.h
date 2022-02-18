@@ -27,20 +27,22 @@ private:
 	float					m_range;
 	float					m_damage;
 
-	D3DXMATRIX  m_worldMatrix; // World matrix.
+	D3DXMATRIX m_worldMatrix; // World matrix.
 	D3DXMATRIX m_translationMatrix; // Translation matrix.
 	D3DXMATRIX m_rotationMatrix;    // Rotation matrix.
 
 	LPDIRECT3DVERTEXBUFFER9 m_vb;
+	LPDIRECT3DTEXTURE9 m_tex;
 
 	TCVertex m_ray[2];
+	Vertex* m_bullet;
 	SceneObject* m_hitobject;
 
 public:
-	Bullet(SceneObject* hitobject, D3DXVECTOR3 translation, D3DXVECTOR3 direction, float velocity, float range, float damage);
+	Bullet(/*SceneObject* hitobject, D3DXVECTOR3 translation, D3DXVECTOR3 direction, float velocity, float range, float damage*/);
 	virtual ~Bullet();
 
-	void Update();
+	void Update(const float& elapsed);
 	void Render();
 	bool IsExpired();
 };
@@ -48,19 +50,19 @@ public:
 //-----------------------------------
 //  Bullet Manager
 //-----------------------------------
-class BulletManager
-{
-private:
-	std::vector<Bullet>* m_bullets;
-
-public:
-	BulletManager();
-	virtual ~BulletManager();
-
-	void Update();
-	void Render();
-	void AddBullet(SceneObject* hitobject, D3DXVECTOR3 translation, D3DXVECTOR3 direction, float velocity, float range, float damage);
-};
+//class BulletManager
+//{
+//private:
+//	std::vector<Bullet>* m_bullets;
+//
+//public:
+//	BulletManager();
+//	virtual ~BulletManager();
+//
+//	void Update();
+//	void Render();
+//	void AddBullet(SceneObject* hitobject, D3DXVECTOR3 translation, D3DXVECTOR3 direction, float velocity, float range, float damage);
+//};
 
 
 #endif // BULLET_H_

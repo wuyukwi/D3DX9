@@ -151,7 +151,7 @@ Material Standard_7 {
  0.000000;0.000000;0.000000;;
 
  TextureFilename {
-  "data\\m_ss003.dds";
+  "data/m_ss003.dds";
  }
 }
 

@@ -38,7 +38,7 @@ HRESULT CD3DXAnimation::SetupBoneMatrixPointers(LPD3DXFRAME pFrameBase, LPD3DXFR
 	{
 		D3DXFRAME_DERIVED* pFrame = NULL;
 		D3DXMESHCONTAINER_DERIVED* pMeshContainer = (D3DXMESHCONTAINER_DERIVED*)pFrameBase->pMeshContainer;
-
+		
 		// if there is a skinmesh, then setup the bone matrices
 		if (pMeshContainer->pSkinInfo != NULL)
 		{
@@ -78,6 +78,7 @@ void CD3DXAnimation::DrawFrame(IDirect3DDevice9* pd3dDevice, LPD3DXFRAME pFrame)
 	if (pFrame == NULL) return;
 	LPD3DXMESHCONTAINER pMeshContainer;
 	pMeshContainer = pFrame->pMeshContainer;                    // 取得网格容器
+
 	while (pMeshContainer != NULL)
 	{
 		DrawMeshContainer(pd3dDevice, pMeshContainer, pFrame);  // 绘制非空蒙皮网格
@@ -106,7 +107,7 @@ void CD3DXAnimation::DrawMeshContainer(IDirect3DDevice9* pd3dDevice, LPD3DXMESHC
 	D3DXMATRIXA16 matTemp;
 	D3DCAPS9 d3dCaps;
 	pd3dDevice->GetDeviceCaps(&d3dCaps);
-	m_pOrigMesh = pMeshContainer->pOrigMesh;
+	
 
 	// first check for skinning
 	if (pMeshContainer->pSkinInfo != NULL)
@@ -194,13 +195,16 @@ bool CD3DXAnimation::Init(LPCTSTR filename)
 {
 	m_pAllocateHier = new CAllocateHierarchy();
 	D3DXLoadMeshHierarchyFromX(filename, D3DXMESH_MANAGED, m_pDevice, m_pAllocateHier, NULL, &m_pFrameRoot, &m_pAnimController);
+	D3DXLoadMeshFromX(filename, NULL, m_pDevice, NULL, NULL, NULL, NULL, &m_pOrigMesh);
+	
 	SetupBoneMatrixPointers(m_pFrameRoot, m_pFrameRoot);
+	
 	return true;
 }
 
 void CD3DXAnimation::Render(const LPD3DXMATRIX matrix)
 {
-	//m_pDevice->SetTransform(D3DTS_WORLD, matrix);
+	m_pDevice->SetTransform(D3DTS_WORLD, matrix);
 	UpdateFrameMatrices(m_pFrameRoot, matrix);
 	DrawFrame(m_pDevice, m_pFrameRoot);
 }
